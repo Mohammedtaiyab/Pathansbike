@@ -266,13 +266,13 @@ res.render("addbike",{er:""});
 
 // ===========================================================Get Request========================================================//
 
-app.get("/sale/:regs",function(req,res){
+app.get("/sale/:id",function(req,res){
 
-		Bike.findOne({registerno:req.params.regs},function(err,foundbike){
+		Bike.findOne({_id:req.params.id},function(err,foundbike){
 				if(foundbike){
-						res.render("sale",{registerno:req.params.regs,pera:'sale',buyer:0,bike:foundbike});
+						res.render("sale",{registerno:foundbike.registerno,pera:'sale',buyer:0,bike:foundbike,er:""});
 					}
-					else{console.log(err);}
+					else{res.render("sale",{registerno:"",pera:'sale',buyer:0,bike:[],er:"Bike Details Missing"});}
 				});
 })
 
@@ -280,12 +280,12 @@ app.get("/sale/:regs",function(req,res){
 
 
 
-app.get("/update/:regs",function(req,res){
+app.get("/update/:id",function(req,res){
 
-			Buyer.findOne({_id:req.params.regs},function(err,foundbike){
+			Buyer.findOne({_id:req.params.id},function(err,foundbike){
 				if(foundbike){
 						
-						res.render("update",{registerno:foundbike.bike.registerno,pera:'Update',buyer:foundbike});
+						res.render("update",{registerno:foundbike.bike.registerno,pera:'Update',buyer:foundbike,er:""});
 				}
 				else
 				{
@@ -360,14 +360,14 @@ app.get("/saleList",function(req,res){
 
 
 
-app.get("/updatebike/:regs",function(req,res){
-	Bike.findOne({registerno:req.params.regs}, function(err, bikeRecordes){
+app.get("/update/bike/:id",function(req,res){
+	Bike.findOne({_id:req.params.id}, function(err, bikeRecordes){
 				 			if(bikeRecordes){
 								res.render("updatebike",{bikeR:bikeRecordes,er:""});
 							}
 							else
 							{
-								console.log(err);
+								res.render("updatebike",{bikeR:[],er:"Something Went Wrong"});
 							}
 						});
 });
@@ -1242,7 +1242,7 @@ app.post("/task",function(req,res){
 
 // ===========================================================Post Request========================================================//
 
-app.post("/searchb",function(req,res){
+app.post("/search/bike",function(req,res){
 	var para = "";
 		if(req.body.para){para=req.body.para}
 	var rc="";
@@ -1310,19 +1310,22 @@ else if(!ava==""){
 					else
 					{
 						
-						res.render("bikes",{bikeRecorde:nameRecorde,er:"Record Not Found For name"});
+						res.render("bikes",{bikeRecorde:nameRecorde,er:"Couldn't Find Data"});
 					}
    					
 		 		});
 	}else if(!month==""){
 		Bike.find({purchasemonth:month},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				if(reCorde){console.log(month);
+					res.render("bikes",{bikeRecorde:reCorde,er:""});}
+				else{res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data"});}
 								
 					});
 	}
 
 		else{
-			res.redirect("bikes");
+			//res.redirect("bikes");
+			res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data"});
 		}
 
 })
