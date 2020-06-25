@@ -1,0 +1,106 @@
+<%- include("header"); -%>
+<div class="content">
+        <div class="container-fluid">
+  
+
+
+   <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Old Records</h4>
+                  <p class="card-category"></p>
+                </div>
+                <div class="card-body">
+
+<div class="row">
+            <div class="col-md-4">
+<div class="list-group">
+<h6>Select Bike</h6>
+<% bikes.forEach(function(bike){ %>
+
+  <a href="/history/<%= bike.registerno %>"<button type="button" class="list-group-item list-group-item-action" >
+  <%= bike.registerno %>
+  </button></a>
+  <% }) %>
+</div>
+</div>
+ <div class="col-md-8">
+ <% if(one!==""){ %>
+
+
+<table class="table">
+                      <thead class=" text-primary">
+                          <th>
+                          Registration No
+                        </th>
+                        <th>
+                          Name
+                        </th>
+                        <th>
+                       chasis No
+                        </th>
+                      </thead>
+
+<tr>
+      
+            <td><%= one.registerno %></td>
+              <td><%= one.bname %></td>
+                <td><%= one.chasisno %></td>
+                </tr>
+                  <tr>
+                <th class="text-primary">Purchase Date</th>
+              <% for(var i=0;i<one.pdate.length;i++){ %>
+             <td> <% var d= one.pdate[i].getDate(); m=1+one.pdate[i].getMonth();y=one.pdate[i].getYear()%100 %>
+             <%= d + "/" + m +"/"+y%></td>
+                 <% } %>
+
+                </tr>
+                <tr>
+                <th class="text-primary">From</th>
+                  <% for(var i=0;i<one.from.length;i++){ %>
+                <td><%= one.from[i] %></td>
+                  <% } %>
+                </tr><tr><th class="text-primary">Cost</th>
+
+                 <% for(var i=0;i<one.cost.length;i++){ %>
+                <td><%= one.cost[i] %></td>
+                <% } %>
+                </tr><tr><th class="text-primary">Sale Date</th>
+                 <% for(var i=0;i<one.sdate.length;i++){ %>
+              <td><% var d= one.sdate[i].getDate(); m=1+one.sdate[i].getMonth();y=one.sdate[i].getYear()%100 %>
+                      <%= d + "/" + m +"/"+y%></td>
+                   <% } %>
+                </tr><tr><th class="text-primary">To</th>
+  <% for(var i=0;i<one.to.length;i++){ %>
+                <td><%= one.to[i] %></td>
+                 <% } %>
+                </tr><tr><th class="text-primary">Price</th>
+                  <% for(var i=0;i<one.price.length;i++){ %>
+                  <td><%= one.price[i] %></td>
+                  <% } %>
+                  </tr>
+                    </tbody>
+                    </table>
+                    <% } %>
+</div>
+</div>
+
+
+
+
+
+               
+                </div>
+
+
+
+
+
+</div>
+      </div>
+      <script>
+
+document.getElementsByClassName('nav-item')[5].classList.add('active');
+</script>
+                  <%- include("footer"); -%>

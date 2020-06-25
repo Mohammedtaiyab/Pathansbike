@@ -1,0 +1,201 @@
+<%- include("header"); -%>
+
+    <div class="content">
+        <div class="container-fluid">
+         <% if(er!=""){ %>
+  <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <i class="material-icons">close</i>
+                    </button>
+                    <span>
+                      <%= er %> </span>
+                  </div>
+<%}%>
+        <div class="row">
+<div class="col">
+
+</div>
+<div class="col-md-2">
+                <div class="form-group">
+                        <form class="navbar-form" action="/searchs" method="post">
+                          
+                          <select class="form-control" name="rc" type="Checkbox" id="rc">
+                             <option value="" class="bmd-label-floating mylabel">Bike RC</option>
+                          <option value="true" class="bmd-label-floating mylabel">Recieved</option>
+                          <option value="false" class="bmd-label-floating mylabel">Not Recieved</option>
+                           </select>
+                           
+                         
+                </div>
+            </div>
+              <div class="col-md-2">
+                  <div class="form-group">
+                     
+                           <select class="form-control" name="delivered" id="available" onchange="this.form.submit()">
+                            <option value="" class="bmd-label-floating mylabel">Bike</option>
+                          <option value="true" class="bmd-label-floating mylabel">Delivered</option>
+                          <option value="false" class="bmd-label-floating mylabel">Not Delivered</option>
+                          
+                           </select>
+                             </form>
+                  </div>
+              </div>
+               <div class="col-md-2">
+  
+ <form class="navbar-form" action="/searchs" method="post">
+              <div class="input-group no-border">
+  <input type="month" id="start" name="month" min="2018-03" value=""  onChange="this.form.submit()" class="form-control">
+              </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+           <form class="navbar-form" action="/searchs" method="post">
+              <div class="input-group no-border">
+                <input type="text" value="" name="para" class="form-control" placeholder="Search...">
+                <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                  <i class="material-icons">search</i>
+                  <div class="ripple-container"></div>
+                </button>
+              </div>
+            </form>
+</div>
+</div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Sales Records</h4>
+                  <p class="card-category"></p>
+                </div>
+                <div class="card-body">
+                  <div id="print" class="table-responsive">
+                    <table class="table table-hover" style="font-size: small;">
+                      <thead class=" text-primary">
+                        <th>
+                          ID
+                        </th>
+                        <th>
+                          Reg.No
+                        </th>
+                        <th>
+                          Name
+                        </th>
+                        <th>
+                          Address
+                        </th>
+                        <th>
+                          Contact No
+                           </th>
+                           <th>
+                            Date
+                            </th>
+                         <th>
+                        Transfer.C
+                        </th>
+
+                         <th>
+                        T.Price
+                        </th>
+
+                        <th>
+                          Recieved
+                        </th>
+                          <th>
+                          Due
+                        </th>
+                         <th>
+                          Note
+                        </th> 
+                        <th scope="col">RC</th>
+                        <th scope="col">out</th>
+                        <th>
+                          Actions
+                        </th>
+
+                      </thead>
+                      <tbody>
+                       <% var i = 1; %>
+                       <%  salesRecorde.forEach(function(sale){ %>
+                          <tr>
+                          <th>
+                           <%= i %>
+                          </th>
+                           <td class="text-primary">
+                        <%=sale.bike.registerno%>
+                          </td>
+                          <td>
+                           <%=sale.name%>
+                          </td>
+                          <td>
+                            <%=sale.add%>
+                          </td>
+                          <td>
+                            <%=sale.contact%>
+                          </td>
+                          <td >
+              <% var d= sale.sdate.getDate(); m=1+sale.sdate.getMonth();y=sale.sdate.getYear()%100 %>
+                      <%= d + "/" + m +"/"+y%>
+                             
+                          </td>
+                          <td>
+                            <%=sale.transamount%>
+                          </td>
+                         
+                          <td>
+                            <%=sale.samount%>
+                          </td>
+                            <td>
+                             <%=sale.paid%> 
+                          </td>
+                          <td class="text-primary">
+                             <%=sale.due%>
+                          </td>
+                         
+                          <td>
+                            <%=sale.snote%>
+                          </td>
+                           <td><% if(sale.rc===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          </td>
+                          <td><% if(sale.delivery===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          <td class="text-primary"><a href="/update/<%=sale._id%>">
+                          <span class="material-icons">create</span></a>
+                           <a href="/repurchase/<%=sale.bike.registerno%>" onclick="return confirm('This Action will Delete Purchase and Sales Recorde and will be Added to History');"><img src="/static/img/recycle.png"></a> 
+                          </td>
+
+
+                        </tr>
+
+
+                                <% i++; }) %>
+                      </tbody>
+
+
+
+
+
+
+
+
+
+                      
+                    </table>
+                  </div>
+
+                </div>
+                
+                  
+        </div>
+          <input class="btn btn-secondary" type="button" onclick="printDiv('print')" value="print!" />
+      </div>
+       <script>
+document.getElementsByClassName('nav-item')[2].classList.add('active');
+</script>
+<%- include("footer"); -%>

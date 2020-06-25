@@ -1,0 +1,185 @@
+<%- include("header"); -%>
+    <!-- End Navbar -->
+      <div class="content">
+        <div class="container-fluid">
+
+<% if(er!=""){ %>
+  <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <i class="material-icons">close</i>
+                    </button>
+                    <span>
+                      <%= er %> </span>
+                  </div>
+<%}%>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Enter Bike  Details</h4>
+                 <!--  <p class="card-category">Complete your profile</p> -->
+                </div>
+                <div class="card-body">
+                  <form action="/addbike" method="post">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Bike Name</label>
+                          <input type="text" name="bname" class="form-control">
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Model</label>
+                          <input type="text" name="model" class="form-control">
+                        </div>
+                      </div>
+
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Chasis No</label>
+                          <input type="text" name="chasisno"  class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Reg.No</label>
+                          <input type="text" name="registerno"  class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Seller</label>
+                          <input type="text" name="seller" class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Date</label>
+                         <input type="date" class="form-control" name="bdate" value="2020-06-04">
+                        </div>
+                      </div>
+                             <div class="col-md-1">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Ledger</label>
+                         <input type="text" class="form-control" name="ledger">
+                        </div>
+                      </div>
+                       <div class="col-sm-2">
+                        <div class="form-group">
+                        <input class="mycheck" name="rc" type="Checkbox" id="rc" value="true" >
+                           <label class="bmd-label-floating mylabel">Bike RC</label>
+                          
+                        </div>
+                      </div>
+                            <div class="col-md-3">
+                        <div class="form-group">
+                           <input class="mycheck" name="recieve" type="Checkbox" id="recieve" value="true">
+                          <label class="bmd-label-floating mylabel">Bike Recieved</label>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+
+                    <div class="row">
+
+
+
+                     <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Purchase Amount</label>
+                          <input type="text" id="first" name="pamount" class="form-control">
+                        </div>
+                      </div>
+
+
+                    
+
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Transfer</label>
+                          <input type="text" id="third" name="transfer" class="form-control">
+                        </div>
+                      </div>
+                     
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Total Cost:</label>
+                          <input type="text" id="result" name="totalcost"  class="form-control">
+                        </div>
+                      </div>
+                      
+                      </div>
+                    <div class="row">
+                     
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Note</label>
+                          <div class="form-group">
+                            <label class="bmd-label-floating"></label>
+                            <textarea class="form-control" name="note" rows="1"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                      <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                         <div class="modal-dialog modal-sm">
+                           <div class="modal-content">
+                            <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLongTitle"><strong>Conformation<strong></h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                     </button>
+                                  </div>
+                                  <div class="modal-body">
+                                     <h5><strong>Are You Sure?</strong></h5>
+                                </div>
+                               <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                 <button type="submit" class="btn btn-primary pull-right">Save</button>
+                                </div>
+                             </div>
+                              </div>
+                              </div>
+
+
+                                 <button type="button" class="btn mr-2 mb-2 btn-primary pull-right" data-toggle="modal" data-target=".bd-example-modal-sm">Save</button>
+                
+                  </form>
+
+        </div>
+      </div>
+<script>
+
+
+
+
+
+document.getElementsByClassName('nav-item')[1].classList.add('active');
+
+var first = document.getElementById('first');
+var third = document.getElementById('third');
+var result = document.getElementById('result');
+
+first.addEventListener("input", sum);
+
+third.addEventListener("input", sum);
+
+
+function sum() {
+
+var one = parseFloat(first.value) || 0;
+var three = parseFloat(third.value) || 0;  
+var add = one+three;
+
+result.value = add;
+
+}
+</script>
+      <%- include("footer"); -%>

@@ -1,0 +1,138 @@
+<%- include("header"); -%>
+
+
+  <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                <div class="card-header card-header-warning card-header-icon">
+                  <div class="card-icon">
+                  <i class="fa fa-product-hunt" aria-hidden="true"></i>
+                  </div>
+                  <p class="card-category">Purchases</p>
+                  <h4 class="card-title"><span>₹<%= statis.purchase%></span></h4>
+                </div>
+                <div class="card-footer">
+                
+                </div>
+              </div>
+            </div>
+
+
+ <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                <div class="card-header card-header-warning card-header-icon">
+                  <div class="card-icon">
+                   <i class="fa fa-scribd" aria-hidden="true"></i>
+                  </div>
+                  <p class="card-category">Sales</p>
+                  <h4 class="card-title"><span>₹<%= statis.sales%></span></h4>
+                </div>
+                <div class="card-footer">
+                  
+                </div>
+              </div>
+            </div>
+ <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                <div class="card-header card-header-warning card-header-icon">
+                  <div class="card-icon">
+                   <i class="fa fa-credit-card-alt" aria-hidden="true"></i>
+                  </div>
+                  <p class="card-category">Expenses</p>
+                  <h4 class="card-title"><span>₹<%= statis.expenses%></span></h4>
+                </div>
+                <div class="card-footer">
+                  
+                </div>
+              </div>
+            </div>
+ <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="card card-stats">
+                <div class="card-header card-header-warning card-header-icon">
+                  <div class="card-icon">
+                  <i class="fa fa-money" aria-hidden="true"></i>
+                  </div>
+                  <p class="card-category">Income</p>
+                  <h4 class="card-title"><span>₹<%= (statis.income + statis.rent)%></span></h4>
+                </div>
+                <div class="card-footer">
+                  
+                </div>
+              </div>
+            </div>
+           </div>
+
+
+
+   <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Old Records</h4>
+                  <p class="card-category"></p>
+                </div>
+                <div class="card-body">
+
+<div class="row">
+            <div class="col-md-4">
+             <form action="/search/statis" method="post">
+    <div class="input-group no-border">
+  <input type="month" id="start" name="month" min="2018-03" value=""  onChange="this.form.submit()" class="form-control">
+              </div>
+</form>
+</div>
+<% if (oldrec!==""){ %>
+ <div class="col-md-8">
+ <table class="table table-hover">
+ <tr>
+ <% var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; %>
+  <% var m=months[oldrec.date.getMonth()];y=oldrec.date.getFullYear() %>
+                         
+<th><%= m +"/"+y%></th>
+</tr>
+<tr>
+<th>Capital</th>
+<td><span>₹<%= oldrec.capital%></span></td>
+</tr>
+ <tr>
+<th>Purchase</th>
+<td><span> ₹<%= oldrec.purchase%></span></td>
+</tr>
+<tr>
+<th>Sales</th>
+<td><span>₹<%= oldrec.sales%></span></td>
+</tr>
+<tr>
+<th>Expenses</th>
+<td><span>₹<%=  oldrec.expenses%></span></td>
+</tr>
+<th>Income</th>
+<td><span>₹<%=  oldrec.income%></span></td>
+</tr>
+<tr>
+<th>Profit</th>
+<td><span>₹<%=  oldrec.profit%></span></td>
+</tr>
+<tr>
+<th>Loss</th>
+<td><span>₹<%=  oldrec.loss%></span></td>
+</tr>
+
+</table>
+        
+</div>
+<%}%>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<script>document.getElementsByClassName('nav-item')[6].classList.add('active');
+
+</script>
+
+      <%- include("footer"); -%>

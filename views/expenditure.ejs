@@ -1,0 +1,150 @@
+<%- include("header"); -%>
+<div class="content">
+        <div class="container-fluid">
+  
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+               
+                <div class="card-body">
+                  
+                	   <div class="card">
+                <div class="card-header card-header-tabs card-header-primary">
+                  <div class="nav-tabs-navigation">
+                    <div class="nav-tabs-wrapper">
+                      <span class="nav-tabs-title">Account</span>
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                        <li class="nav-item">
+                          <a class="nav-link active" href="#income" data-toggle="tab">
+                            <i class="material-icons">add</i>Income
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#expense" data-toggle="tab">
+                            <i class="material-icons">remove</i>Expenses
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="income">
+                      <table class="table">
+                      <th>Sno</th>
+                      <th>Date</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                        <tbody>
+                        <% var i=0; %>
+<% expinc.forEach(function(fund){ %>
+         <%   if(fund.credit > 0 ){  i++; %>
+                        
+                        <tr>
+                        <td><%= i %></td>
+                         <td> <% var d= fund.date.getDate(); m=1+fund.date.getMonth();y=fund.date.getYear()%100 %>
+                      <%= d + "/" + m +"/"+y%></td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.credit %></td>
+                        </tr>
+          <%   }%>
+
+<%})%>
+
+
+                        </tbody>
+                      </table>
+                      <form action="/expenditure/credit" method="post">
+                          <div class="row">
+                           <div class="col-md-1">
+                                    <div class="form-group">
+                                    <input type="date" class="form-control" name="date" value="">
+                                          
+                                     </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                          <input type="text" name="desc" placeholder="Discription" class="form-control">
+                                     </div>
+                                </div>
+                              <div class="col-md-3">
+                                  <div class="form-group">
+                                        <input type="text" name="amt" placeholder="Amount"  class="form-control">
+                                  </div>
+                              </div>
+                            <div class="col-md-2">
+                                  <div class="form-group">
+                                        <button type="submit" class="btn btn-primary pull-right">+</button>
+                                  </div>
+                              </div>
+                    </div>
+                    </form>
+                      </div>
+
+                    <div class="tab-pane" id="expense">
+                      <table class="table">
+                        <th>Sno</th>
+                      <th>Date</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                        <tbody>
+                        <% var i=0;%>
+<% expinc.forEach(function(fund){  %>
+         <%   if(fund.debit >  0){ i++;%>
+                        <tr>
+                        <td><%= i %></td>
+                         <td>
+                           <% var d= fund.date.getDate(); m=1+fund.date.getMonth();y=fund.date.getYear()%100 %>
+                      <%= d + "/" + m +"/"+y%>
+                          </td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.debit %></td>
+                        </tr>
+          <%  }%>
+
+<%})%>
+                        </tbody>
+                      </table>
+                          <form action="/expenditure/debit" method="post">
+                          <div class="row">
+                               <div class="col-md-1">
+                                    <div class="form-group">
+                                    <input type="date" class="form-control" name="date" value="">
+                                          
+                                     </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                          <input type="text" name="desc" placeholder="Discription" class="form-control">
+                                     </div>
+                                </div>
+                              <div class="col-md-3">
+                                  <div class="form-group">
+                                        <input type="text" name="amt" placeholder="Amount"  class="form-control">
+                                  </div>
+                              </div>
+                            <div class="col-md-2">
+                                  <div class="form-group">
+                                        <button type="submit" class="btn btn-primary pull-right">-</button>
+                                  </div>
+                              </div>
+                    </div>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+
+   </div>
+      </div>
+
+      <script>
+
+document.getElementsByClassName('nav-item')[4].classList.add('active');
+</script>
+                  <%- include("footer"); -%>

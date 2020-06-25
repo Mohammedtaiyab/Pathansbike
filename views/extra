@@ -1,0 +1,32 @@
+   <div class="col-md-2">
+                  <div class="form-group">
+              <div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  RC
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="#">Recieved</a>
+    <a class="dropdown-item" href="#">Not Recieved</a>
+  
+  </div>
+</div>
+      
+                  </div>
+              </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+<div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+ Bike
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="#">Available</a>
+    <a class="dropdown-item" href="#">Not Available</a>
+    <a class="dropdown-item" href="#">Rented</a>
+  </div>
+</div>
+                       
+                  </div>
+              </div>

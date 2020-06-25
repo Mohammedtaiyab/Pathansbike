@@ -1,0 +1,641 @@
+<%- include("header"); -%>
+
+ <div class="content">
+        <div class="container-fluid">
+    <div class="col-md-4">
+           <form class="navbar-form" action="/search/account" method="post">
+              <div class="input-group no-border">
+              <input type="month" id="start" name="month" min="2018-03" value="2020-06" class="form-control">
+                <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                  <i class="material-icons">search</i>
+                  <div class="ripple-container"></div>
+                </button>
+              </div>
+            </form>
+</div>
+
+ 
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Monthly Accounting</h4>
+                
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <th>
+                          ID
+                        </th>
+                        <th>
+                          Reg.No
+                        </th>
+                        <th>
+                          Name
+                        </th>
+                        <th>
+                          Model
+                        </th>
+                        <th>
+                          T.Cost
+                        </th>
+                        <th>
+                        Sale Price
+                        </th>
+                        <th>
+                        Profit
+                        </th>
+                      </thead>
+                      <tbody>
+                
+
+
+
+
+
+                        <% var i = 1; var pro=0; var totpro =0;%>
+                       <%  salesRecordes.forEach(function(sale){ %>
+                          <tr>
+                          <td>
+                           <%= i %>
+                          </td>
+                           <td class="text-primary">
+                        <%=sale.bike.registerno%>
+                          </td>
+                          <td>
+                           <%=sale.bike.bname%>
+                          </td>
+                          <td>
+                            <%=sale.bike.model%>
+                          </td>
+                          <td>
+                            <%=sale.bike.totalcost%>
+                          </td>
+                          <td>
+                            <%=sale.samount%>
+                          </td>
+                            <td>
+                            <% pro=sale.samount-sale.bike.totalcost %>
+                             <%= pro %> 
+                          </td>
+                        </tr>
+
+
+                                <% totpro=totpro+pro; i++; }) %>
+
+
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><h4><Strong>Profit</strong></h4></td>
+<td><h4><Strong><%= totpro %></strong></h4></td>
+</tr>
+
+
+
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+
+
+
+</div>
+<div class="row">
+ <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-header card-header-warning">
+                  <h4 class="card-title">Expenses</h4>
+                 
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                        <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td>1</td>
+                      <td>Daily Expenses</td>
+                        <td><%=dailyex %></td>
+                    </tr>
+                     <% var i=1; totex=dailyex;%>
+<% acc.forEach(function(fund){  %>
+         <%   if(fund.debit >  0){ i++;%>
+                        <tr>
+                        <td><%= i %></td>
+                         
+                          </td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.debit %></td>
+                        </tr>
+          <% totex=totex+fund.debit;  }%>
+
+<%})%>
+      <tr>
+      <td></td>
+       <td><h4><strong>Total</strong></h4></td>
+        <td><h4><strong><%= totex %> </strong></h4></td>
+      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+ <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-header card-header-warning">
+                  <h4 class="card-title">Income</h4>
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                       <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                    <td>1</td>
+                      <td>Daily Income</td>
+                        <td><%= dailyin %></td>
+                    </tr>
+                      <tr>
+                    <td>2</td>
+                      <td>Rent</td>
+                        <td><%= rent %></td>
+                    </tr>
+                     <% var i=1; var totin=dailyin+rent%>
+                    <% acc.forEach(function(fund){ %>
+         <%   if(fund.credit > 0 ){  i++; %>
+                        
+                        <tr>
+                        <td><%= i %></td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.credit %></td>
+                        </tr>
+          <% totin=totin+fund.credit;  }%>
+
+<%})%>
+<tr>
+      <td></td>
+       <td><h4><strong>Total</strong></h4></td>
+        <td><h4><strong><%= totin %></strong></h4></td>
+      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+           </div>
+
+
+
+<div class="row">
+ <div class="col-lg-6 col-md-12">
+<div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Proft A/c</h4>
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                        <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                     <tr>
+                     <td>1</td>
+                     <td>Sales Profit</td>
+                     <td><%= totpro %></td>
+                     </tr>
+                       <tr>
+                     <td>2</td>
+                     <td>Income</td>
+                     <td><%= totin %></td>
+                     </tr>
+                       <tr>
+                     <td>3</td>
+                     <td>Expenses</td>
+                     <td><%= totex %></td>
+                     </tr>
+                      <% var net=(totpro+totin)-totex; %>
+                      <% if(net>0){ %>
+                        <tr>
+                     <td></td>
+                      <td><h4><strong>Net.Profit</strong></h4></td>
+                     <td><h4><strong><%= net %></h4><strong></td>
+                     </tr>
+                      <%}else {%>
+                        <tr>
+                     <td></td>
+                      <td><h4><strong>Net.Loss</strong></h4></td>
+                     <td><h4><strong><%= net %></h4><strong></td>
+                     </tr>
+                      <%}%>
+
+
+
+                       
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              </div>
+ <div class="col-lg-6 col-md-12">
+<div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Balance Sheet</h4>
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                        <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                     <tr>
+                     <td>1</td>
+                     <td><strong>Capital</strong></td>
+                     <td><strong><%= balance %></strong></td>
+                     </tr>
+                       <tr>
+                     <td>2</td>
+                     <td><strong>Purchase</strong></td>
+                     <td><strong><%= totpurch %></strong></td>
+                     </tr>
+                      <tr>
+                     <td>3</td>
+                     <td><strong>Expenses</strong></td>
+                     <td><strong><%= totex %></strong></td>
+                     </tr>
+                       <tr>
+                     <td>4</td>
+                     <td><strong>Sales</strong></td>
+                     <td><strong><%= totsale %></strong></td>
+                     </tr>
+                       <tr>
+                     <td></td>
+                      <td><h4><strong>New Capital</strong></h4></td>
+                     <td><h4><strong><%= (balance-totpurch-totex)+totsale %></h4><strong></td>
+                     </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              </div>
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       
+<div class="canvas_div_pdf" id="print">
+  <div class="container" style="text-align: center;">
+   <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <th>
+                          ID
+                        </th>
+                        <th>
+                          Reg.No
+                        </th>
+                        <th>
+                          Name
+                        </th>
+                        <th>
+                          Model
+                        </th>
+                        <th>
+                          T.Cost
+                        </th>
+                        <th>
+                        Sale Price
+                        </th>
+                        <th>
+                        Profit
+                        </th>
+                      </thead>
+                      <tbody>
+                
+
+
+
+
+
+                        <% var i = 1; var pro=0; var totpro =0;%>
+                       <%  salesRecordes.forEach(function(sale){ %>
+                          <tr>
+                          <td>
+                           <%= i %>
+                          </td>
+                           <td class="text-primary">
+                        <%=sale.bike.registerno%>
+                          </td>
+                          <td>
+                           <%=sale.bike.bname%>
+                          </td>
+                          <td>
+                            <%=sale.bike.model%>
+                          </td>
+                          <td>
+                            <%=sale.bike.totalcost%>
+                          </td>
+                          <td>
+                            <%=sale.samount%>
+                          </td>
+                            <td>
+                            <% pro=sale.samount-sale.bike.totalcost %>
+                             <%= pro %> 
+                          </td>
+                        </tr>
+
+
+                                <% totpro=totpro+pro; i++; }) %>
+
+
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><h4><Strong>Profit</strong></h4></td>
+<td><h4><Strong><%= totpro %></strong></h4></td>
+</tr>
+
+
+
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                       <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                    <td>1</td>
+                      <td>Daily Income</td>
+                        <td><%= dailyin %></td>
+                    </tr>
+                      <tr>
+                    <td>2</td>
+                      <td>Rent</td>
+                        <td><%= rent %></td>
+                    </tr>
+                     <% var i=1; var totin=dailyin+rent%>
+                    <% acc.forEach(function(fund){ %>
+         <%   if(fund.credit > 0 ){  i++; %>
+                        
+                        <tr>
+                        <td><%= i %></td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.credit %></td>
+                        </tr>
+          <% totin=totin+fund.credit;  }%>
+
+<%})%>
+<tr>
+      <td></td>
+       <td><h4><strong>Total</strong></h4></td>
+        <td><h4><strong><%= totin %></strong></h4></td>
+      </tr>
+                    </tbody>
+                  </table>
+                </div>
+ <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                       <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                    <td>1</td>
+                      <td>Daily Income</td>
+                        <td><%= dailyin %></td>
+                    </tr>
+                      <tr>
+                    <td>2</td>
+                      <td>Rent</td>
+                        <td><%= rent %></td>
+                    </tr>
+                     <% var i=1; var totin=dailyin+rent%>
+                    <% acc.forEach(function(fund){ %>
+         <%   if(fund.credit > 0 ){  i++; %>
+                        
+                        <tr>
+                        <td><%= i %></td>
+                        <td><%= fund.description %></td>
+                       
+                        <td><%= fund.credit %></td>
+                        </tr>
+          <% totin=totin+fund.credit;  }%>
+
+<%})%>
+<tr>
+      <td></td>
+       <td><h4><strong>Total</strong></h4></td>
+        <td><h4><strong><%= totin %></strong></h4></td>
+      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+
+   <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                        <th>Sno</th>
+                      <th>Discription</th>
+                      <th>Amount</th>
+                    </thead>
+                    <tbody>
+                     <tr>
+                     <td>1</td>
+                     <td>Sales Profit</td>
+                     <td><%= totpro %></td>
+                     </tr>
+                       <tr>
+                     <td>2</td>
+                     <td>Income</td>
+                     <td><%= totin %></td>
+                     </tr>
+                       <tr>
+                     <td>3</td>
+                     <td>Expenses</td>
+                     <td><%= totex %></td>
+                     </tr>
+                      <% var net=(totpro+totin)-totex; %>
+                      <% if(net>0){ %>
+                        <tr>
+                     <td></td>
+                      <td><h4><strong>Net.Profit</strong></h4></td>
+                     <td><h4><strong><%= net %></h4><strong></td>
+                     </tr>
+                      <%}else {%>
+                        <tr>
+                     <td></td>
+                      <td><h4><strong>Net.Loss</strong></h4></td>
+                     <td><h4><strong><%= net %></h4><strong></td>
+                     </tr>
+                      <%}%>
+
+
+
+                       
+                    </tbody>
+                  </table>
+                </div>
+
+
+
+
+<div id="editor"></div>
+
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+<!-- Large modal -->
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+   <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="income">
+                      <table class="table">
+                      <tr>
+                      <th>Current Balance :</th>
+                      <th id="oldcap"><%= (balance-totpurch-totex)+totsale %></th>
+
+                       </tr>
+                       <tr>
+                       <form action="/capital" method="post">
+                       <td><div class="form-group">
+
+                          <label class="bmd-label-floating">Description</label>
+                          <input type="text"  name ="desc" id="desc" class="form-control">
+                        </div></td>
+                       <td><div class="form-group">
+                          <label class="bmd-label-floating">Amount</label>
+                          <input type="text"  name ="amount" id="amount" class="form-control">
+                            <input type="hidden"  name ="oldc" id="oldc" value="<%= (balance-totpurch-totex)+totsale %>">
+                            <input type="hidden"  name ="date" value="<%= date %>">
+                        </div></td>
+                            <tr>
+                      <th>New Balance :</th>
+                      <% var capital = (balance-totpurch-totex)+totsale %>
+                      <th>  <input type="text"  name ="newcap" id="newcap" class="form-control"></th>
+                       </tr>
+                       </tr>
+                       </table>
+                        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+     <button type="submit" class="btn btn-primary pull-right"  onclick="return confirm('Are You Sure!')">Save</button>
+     </form>
+                </div>
+                </div>
+                </div> </div> 
+
+  </div>
+  </div>
+  </div>
+</div>
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Save</button>
+
+
+ <input class="btn btn-secondary" type="button" onclick="printDiv('print')" value="print!" />
+            
+                  </div>
+        </div>
+           
+<script>
+
+document.getElementsByClassName('nav-item')[5].classList.add('active');
+var amount = document.getElementById('amount');
+amount.addEventListener("input", newcap);
+var newcap1= document.getElementById('newcap');
+function newcap(){
+var old=parseInt(document.getElementById('oldcap').innerHTML);
+var withd =parseInt(document.getElementById('amount').value) 
+return newcap1.value= old-withd;
+}
+</script>
+      <%- include("footer"); -%>

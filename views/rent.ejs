@@ -1,0 +1,119 @@
+<%- include("header"); -%>
+   
+   <div class="content">
+        <div class="container-fluid">
+
+  <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Enter Rental Details</h4>
+                
+                </div>
+                <div class="card-body">
+                  <form action="/rent" method="post">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Bike Name/Model</label>
+                          <input type="text" name="bname" class="form-control" value="<%= bikeR.bname + "/" + bikeR.model %>">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Reg.No</label>
+                          <input type="text" name="registerno"  class="form-control" value="<%= bikeR.registerno%>">
+                        </div>
+                      </div>
+                       <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Customer Name</label>
+                          <input type="text" name="name" class="form-control">
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Contact No:</label>
+                          <input type="text" name="contact" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                     
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="">Hire Date</label>
+                         <input type="date" class="form-control" name="hdate" value="">
+                        </div>
+                      </div>
+                      	      <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="">Release Date</label>
+                         <input type="date" class="form-control" name="rdate" value="">
+                        </div>
+                      </div>
+
+                     <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Rate</label>
+                          <input type="text" id="first" name="rate" class="form-control">
+                        </div>
+                      </div>
+                       <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Received</label>
+                          <input type="text" id="third" name="receive" class="form-control">
+                        </div>
+                      </div>
+                     
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Due</label>
+                          <input type="text" id="result" name="due"  class="form-control">
+                        </div>
+                      </div>
+                      
+                      </div>
+                    <div class="row">
+                     
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Note</label>
+                          <div class="form-group">
+                            <label class="bmd-label-floating"></label>
+                            <textarea class="form-control" name="note" rows="1"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary pull-right"  onclick="return confirm('Are You Sure!')">Save</button>
+                    <div class="clearfix"></div>
+                  </form>
+
+
+
+                  </div>
+                  </div>
+   <script>
+document.getElementsByClassName('nav-item')[3].classList.add('active');
+
+var first = document.getElementById('first');
+var third = document.getElementById('third');
+var result = document.getElementById('result');
+
+first.addEventListener("input", sum);
+
+third.addEventListener("input", sum);
+
+
+function sum() {
+
+var one = parseFloat(first.value) || 0;
+var three = parseFloat(third.value) || 0;  
+var add = one-three;
+
+result.value = add;
+
+}
+</script>
+<%- include("footer"); -%>

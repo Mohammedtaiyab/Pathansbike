@@ -1,0 +1,197 @@
+<%- include("header"); -%>
+
+ <div class="content">
+        <div class="container-fluid">
+  
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Enter Buyer Details</h4>
+              
+                </div>
+                <div class="card-body">
+  
+
+  <form action="/sale" method="post">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Reg.No</label>
+                          <input type="text" value="<%= registerno %>"  class="form-control" disabled>
+                            <input type="hidden" name = "regrno" id="regs" value="<%= registerno %>">
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Buyer Name</label>
+                          <input type="text"  name ="name" id="name" class="form-control">
+                        </div>
+                      </div>
+
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Address</label>
+                          <input type="text" name ="addr"  id="addr" class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Contact</label>
+                          <input type="text"name ="contact"  id="contact"  class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Date</label>
+                            <input type="date"name ="sdate"  id="sdate" class="form-control" name="buying" value="2020-06-04">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Amount</label>
+                          <input type="text" id="first" name ="samout"class="form-control">
+                        </div>
+                      </div>
+                     <div class="col-md-1">
+                        <div class="form-group">                         
+                      <input type="Checkbox" id="trsfer" onclick="myFunction()" class="form-control">
+                       </div>
+                        </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Transfer Amount</label>
+                          <input type="text" id="third"  name ="tansamout" value="0" class="form-control" disabled>
+                        </div>
+                      </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Paid Amount</label>
+                          <input type="text" id="second"  name ="cpaid"class="form-control">
+                        </div>
+                      </div>
+
+
+
+                    </div>
+                    <div class="row">
+                      
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Due Amount</label>
+                          <input type="text"id="result" name ="amoutdue" class="form-control">
+                        </div>
+                      </div>
+                       <div class="col-sm-2">
+                        <div class="form-group">
+                        <input class="mycheck" name="rc" type="Checkbox" id="rc" value="true" >
+                           <label class="bmd-label-floating mylabel">Bike RC</label>
+                          
+                        </div>
+                      </div>
+                            <div class="col-md-2">
+                        <div class="form-group">
+                           <input class="mycheck" name="delivered" type="Checkbox" id="recieve" value="true">
+                          <label class="bmd-label-floating mylabel">Bike Delivered</label>
+                        </div>
+                      </div>
+
+                        <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Guarantee</label>
+                          <input type="text"id="guarantee" name ="guarantee" class="form-control">
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Note</label>
+                          <div class="form-group">
+                            <label class="bmd-label-floating"></label>
+                            <textarea name ="snote"  id="snote"  class="form-control" rows="1"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                      <div class="modal fade bd-example-modal-sm confirm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                         <div class="modal-dialog modal-sm">
+                           <div class="modal-content">
+                            <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLongTitle"><strong>Conformation<strong></h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                     </button>
+                                  </div>
+                                  <div class="modal-body">
+                                     <h5><strong>Are You Sure?</strong></h5>
+                                </div>
+                               <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                   <button type="submit" class="btn btn-primary pull-right"  >Sale</button>
+                                </div>
+                             </div>
+                              </div>
+                              </div>
+
+
+                                 <button type="button" class="btn mr-2 mb-2 btn-primary pull-right" data-toggle="modal" data-target=".bd-example-modal-sm">Save</button>
+                  
+                    <div class="clearfix"></div>
+                  </form>
+                  
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+ <script>
+
+document.getElementsByClassName('nav-item')[2].classList.add('active');
+
+
+
+ 
+var first = document.getElementById('first');
+var second = document.getElementById('second');
+var result = document.getElementById('result');
+var third = document.getElementById('third');
+
+
+first.addEventListener("input", due);
+second.addEventListener("input", due);
+third.addEventListener("input", due);
+
+function due() {
+var one = parseFloat(first.value) || 0;
+var two = parseFloat(second.value) || 0;
+var three = parseFloat(third.value) || 0;  
+var due=(one+three)-two;
+result.value = due;
+};
+
+
+function myFunction() {
+  var checkBox = document.getElementById('trsfer');
+  var text = document.getElementById('third');
+  if (checkBox.checked == true){
+    text.disabled=false;
+    text.value=0;
+  } else {
+     text.disabled=true;
+  }
+};
+
+</script>
+<%- include("footer"); -%>

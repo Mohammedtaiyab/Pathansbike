@@ -1,0 +1,331 @@
+<%- include("header"); -%>
+
+ <div class="content">
+        <div class="container-fluid">
+  
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Enter Buyer Details</h4>
+                 <!--  <p class="card-category">Complete your profile</p> -->
+                </div>
+                <div class="card-body">
+                  
+
+
+<form action="/update" method="post">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Reg.No</label>
+                          <input type="text" value="<%= registerno %>" id="regs"  class="form-control" disabled>
+                            <input type="hidden" name = "id" value="<%= buyer._id %>">
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Buyer Name</label>
+                          <input type="text" value="<%= buyer.name %>" id="name" name ="name" class="form-control">
+                        </div>
+                      </div>
+
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Address</label>
+                          <input type="text" value="<%= buyer.add %>"  id="addr" name ="addr"class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Contact</label>
+                          <input type="text"  value="<%= buyer.contact %>" id="contact" name ="contact" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Amount</label>
+                          <input type="text" value=" <%= buyer.samount %>"id="first" name ="samout"class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Transfer Amount</label>
+                          <input type="text" id="third"    value=" <%= buyer.transamount%>" name ="tansamout"  class="form-control">
+                        </div>
+                      </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Paid Amount</label>
+                          <input type="text" value=" <%= buyer.paid %>" id="second" name ="cpaid"class="form-control">
+                           <input type="hidden" value=" <%= buyer.paid %>" name ="oldrec">
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Due Amount</label>
+                          <input type="text"  value=" <%= buyer.due %>" id="result" name ="amoutdue" class="form-control">
+                          <input type="hidden"  value=" <%= buyer.clearmonth %>" name ="clearmonth">
+                        </div>
+                      </div>
+                      </div>
+                      <div class="row">
+                         <div class="col-md-2">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Date</label>
+<% var d= ('0' +buyer.sdate.getDate()).slice(-2); m=('0' +(buyer.sdate.getMonth()+1)).slice(-2);y=buyer.sdate.getFullYear() %>
+            <input type="date"  name ="duedate"  id="sdate" class="form-control"value="<%=y + "-" + m +"-"+d%>">
+            <input type="hidden" name="buying" value="<%= buyer.sdate %>" >
+                        </div>
+                      </div>
+                       <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Guarantee</label>
+                      <input type="text"id="guarantee" name ="guarantee" class="form-control" value="<%= buyer.guarantee %>">
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="form-group"><% var i="unchecked";%>
+                        <% if(buyer.rc === true){i="checked"} %>
+                        <input class="mycheck" type="Checkbox" id="rc" name="rc" value="true" <%= i %>>
+                           <label class="bmd-label-floating mylabel">Bike RC</label>
+                          
+                        </div>
+                      </div>
+                            <div class="col-md-2">
+                        <div class="form-group"><% var j="unchecked";%>
+                           <% if(buyer.delivery === true){j="checked"} %>
+                           <input class="mycheck" name="delivered" type="Checkbox" id="recieve" value="true" <%= j %>>
+                          <label class="bmd-label-floating mylabel">Bike Delivered</label>
+                        </div>
+                      </div>
+                         
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Note</label>
+                          <div class="form-group">
+                            <label class="bmd-label-floating"></label>
+                            <textarea name ="snote"  id="snote" class="form-control" rows="1"><%= buyer.snote %></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+   <div class="modal fade bd-example-modal-sm confirm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                         <div class="modal-dialog modal-sm">
+                           <div class="modal-content">
+                            <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLongTitle"><strong>Conformation<strong></h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                     </button>
+                                  </div>
+                                  <div class="modal-body">
+                                     <h5><strong>Are You Sure?</strong></h5>
+                                </div>
+                               <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                   <button type="submit" class="btn btn-primary pull-right"  >Update</button>
+                                </div>
+                             </div>
+                              </div>
+                              </div>
+
+
+                                 <button type="button" class="btn mr-2 mb-2 btn-primary pull-right" data-toggle="modal" data-target=".bd-example-modal-sm">Update</button>
+                     <button type="button" class="btn pull-right" data-toggle="modal" data-target="#exampleModal" onclick="invoice()">Invoice</button>
+                    <div class="clearfix"></div>
+                  </form>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       
+<div class="canvas_div_pdf" id="print">
+  <div class="container" style="text-align: center;">
+   <img src="/static/img/Pathans.jpg" width="40%">
+   <h3 style="font-weight: 700;color: red;">KHWAJA AUTO GARAGE</h2>
+       <p>Dungarpur-Banswara Road, Partapur, 327024<br>
++91 9660352109/9413194182</p>
+<hr>
+
+        <div class="row">
+          <div class="col" style="text-align:initial;">
+              <div  id="namei"></div>
+                <div  id="addri"></div>
+                <div  id="contacti"></div>
+          </div>
+        <div class="col" style="text-align: end;">
+          <div><strong id="sdatei">Date</strong></div>
+            <div  id="">Invoice</div>
+          </div>
+          </div>
+          <hr>
+          <div>
+<table style="width: 100%;">
+<thead>
+<tr>
+<th>Sno</th>
+<th>Product</th>
+<th >Cost</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<% var name = buyer.bike.bname ; var model= buyer.bike.model ;  %>
+<td><%= name + "/" + model  %><p id="regsi">Number</p></td>
+<td  id="firsti"></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Transfer</td>
+<td  id="thirdi"></td>
+<td></td>
+<tr>
+  </tbody>
+</table>
+ <hr>
+  <div class="row">
+  <div class="col-md-6" style="text-align:initial;">
+              <div>Note:<strong id="snotei"></strong></div>
+               <p>Guarantee:<strong id="guaranteei"></strong></p>
+                <h5><strong>Khwaja Auto Garage</strong></h5>
+                <p>_________________</p></div>
+<div class="col-md-6" style="text-align: -webkit-right">
+    <table>
+   <tr>
+  <th>Total :</th>
+  <td id="total">Amount</td>
+  </tr>
+    <tr>
+  <th>Recived :</th>
+  <td id="secondi">Amount</td>
+  </tr>
+  <tr>
+  <th>Due :</th>
+  <td id="resulti">Amount</td>
+  </tr>
+  </table>
+  </div>
+  <div>
+  <hr>
+  <div style="text-align:initial;">
+  1 ADHAAR CARD COPY <BR>
+                1 RASHAN CARD COPY <BR>
+                2 PHOTO's</div>
+          </div>
+ 
+
+</div>
+</div>
+</div>
+<div id="editor"></div>
+
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+     
+      
+       <input type="button" class="btn btn-secondary" onclick="printDiv('print')" value="print!" />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <script>
+
+var first = document.getElementById('first');
+var second = document.getElementById('second');
+var result = document.getElementById('result');
+var third = document.getElementById('third');
+
+first.addEventListener("input", due);
+result.addEventListener("input", due);
+third.addEventListener("input", due);
+
+function due() {
+
+var one = parseFloat(first.value) || 0;
+var two = parseFloat(result.value) || 0;
+var three = parseFloat(third.value) || 0;  
+var due = (one+three)-two;
+
+second.value = due;
+
+}
+
+
+
+
+
+
+function invoice() {
+document.getElementById("regsi").innerHTML=document.getElementById("regs").value;
+document.getElementById("namei").innerHTML=document.getElementById("name").value;
+document.getElementById("addri").innerHTML=document.getElementById("addr").value;
+document.getElementById("contacti").innerHTML=document.getElementById("contact").value;
+document.getElementById("sdatei").innerHTML=document.getElementById("sdate").value;
+document.getElementById("firsti").innerHTML=document.getElementById("first").value;
+document.getElementById("secondi").innerHTML=document.getElementById("second").value;
+document.getElementById("resulti").innerHTML=document.getElementById("result").value;
+document.getElementById("snotei").innerHTML=document.getElementById("snote").value;
+document.getElementById("thirdi").innerHTML=document.getElementById("third").value;
+document.getElementById("guaranteei").innerHTML=document.getElementById("guarantee").value;
+
+ var i = parseInt(document.getElementById("first").value);
+  var t = parseInt(document.getElementById("third").value);
+ document.getElementById("total").innerHTML =i+t ;
+
+}
+</script>
+<%- include("footer"); -%>

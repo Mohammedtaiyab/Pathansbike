@@ -1,0 +1,206 @@
+<%- include("header"); -%>
+
+
+  <div class="content">
+        <div class="container-fluid">
+          <% if(er!=""){ %>
+  <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <i class="material-icons">close</i>
+                    </button>
+                    <span>
+                      <%= er %> </span>
+                  </div>
+<%}%>
+<div class="row">
+  <a href="/addbike"> <button class="btn btn-primary">Purchase</button></a>
+
+
+
+
+
+           <div class="col-md-2">
+                <div class="form-group">
+                        <form class="navbar-form" action="/searchb" method="post">
+                          
+                          <select class="form-control" name="rc" type="Checkbox" id="rc">
+                             <option value="" class="bmd-label-floating mylabel">Bike RC</option>
+                          <option value="true" class="bmd-label-floating mylabel">Recieved</option>
+                          <option value="false" class="bmd-label-floating mylabel">Not Recieved</option>
+                           </select>
+                           
+                         
+                </div>
+            </div>
+              <div class="col-md-2">
+                  <div class="form-group">
+                     
+                           <select class="form-control" name="available" id="available" onchange="this.form.submit()">
+                            <option value="" class="bmd-label-floating mylabel">Bike</option>
+                          <option value="true" class="bmd-label-floating mylabel">Available</option>
+                          <option value="false" class="bmd-label-floating mylabel">Not Avilable</option>
+                           <option value="rent" class="bmd-label-floating mylabel">Rented</option>
+                           <option value="sold" class="bmd-label-floating mylabel">Sold</option>
+                           </select>
+                             </form>
+                  </div>
+              </div>
+              <div class="col-md-2">
+  
+ <form class="navbar-form" action="/searchb" method="post">
+              <div class="input-group no-border">
+  <input type="month" id="start" name="month" min="2018-03" value=""  onChange="this.form.submit()" class="form-control">
+              </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+           <form class="navbar-form" action="/searchb" method="post">
+              <div class="input-group no-border">
+                <input type="text" name="para" class="form-control" placeholder="Search...">
+                <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                  <i class="material-icons">search</i>
+                  <div class="ripple-container"></div>
+                </button>
+              </div>
+            </form>
+</div>
+
+
+
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title "> Purchase Records</h4>
+                  <p class="card-category"></p>
+                </div>
+                <div class="card-body">
+                  <div id="print" class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class=" text-primary">
+                        <th scope="col">
+                          ID
+                        </th>
+                        <th scope="col">
+                          Name
+                        </th>
+                        <th scope="col">
+                          Model
+                        </th>
+                        <th scope="col">
+                          Chasis No.
+                        </th>
+                        <th scope="col">
+                          Reg.No
+                        </th>
+                  
+                        <th scope="col">
+                          Seller
+                        </th>
+                         <th scope="col">
+                          Date
+                        </th>
+                        <th scope="col">
+                          T.Cost
+                        </th>
+                        <th scope="col">
+                          L
+                        </th>
+                        <th scope="col">
+                          Note
+                        </th>
+                        <th scope="col">RC</th>
+                        <th scope="col">IN</th>
+                        <th scope="col">
+                          Actions
+                        </th>
+
+                      </thead>
+                      <tbody>
+                      <% var i = 1; %>
+                       <%  bikeRecorde.forEach(function(bike){ %>
+                          <tr>
+                          <th scope="row">
+                           <%= i %>
+                          </th>
+                          <td>
+                           <%=bike.bname%>
+                          </td>
+                          <td>
+                            <%=bike.model%>
+                          </td>
+                          <td>
+                            <%=bike.chasisno%>
+                          </td>
+                          <td class="text-primary">
+                             <%=bike.registerno%>
+                          </td>
+                        
+                          <td>
+                             <%=bike.seller%>
+                          </td>
+                          <td>
+                            <% var d= bike.bdate.getDate(); m=1+bike.bdate.getMonth();y=bike.bdate.getYear()%100 %>
+                            <%= d + "/" + m +"/"+y%>
+                    
+                          </td>
+                          <td>
+                             <%=bike.totalcost%>
+                          </td>
+                           <td class="text-primary">
+                         <%=bike.ledger%>
+                          </td>
+                          <td>
+                            <%=bike.note%>
+                          </td>
+                          <td><% if(bike.rc===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          </td>
+                          <td><% if(bike.receive===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          </td>
+                          <td class="text-primary">
+                          <% if(bike.status  == 'Available') { %>
+                                       <% if(bike.rent === true) { %>
+                                                  Rented  <% } else {%>
+
+                             <a href="/sale/<%=bike.registerno%>">
+                          <span class="material-icons">add_shopping_cart</span></a>
+                           <a href="/rent/<%=bike.registerno%>"><span class="material-icons">sports_motorsports</span></a>
+                            <% } %>
+                          <a href="/updatebike/<%=bike.registerno%>">
+                          <span class="material-icons">create</span></a>
+
+                         <% } else {%>
+ 
+                          Sold
+                          <a href="/repurchase/<%=bike.registerno%>" onclick="return confirm('This Action will Delete Purchase and Sales Recorde and will be Added to History');"><img src="/static/img/recycle.png"></a> 
+                            <% } %>
+                          </td>
+
+
+                        </tr>
+
+
+                                <% i++; }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+        </div>
+         <input class="btn btn-secondary" type="button" onclick="printDiv('print')" value="print!" />
+      </div>
+      <script>
+document.getElementsByClassName('nav-item')[1].classList.add('active');
+</script>
+<%- include("footer"); -%>

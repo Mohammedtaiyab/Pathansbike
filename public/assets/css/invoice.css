@@ -1,0 +1,148 @@
+
+/* -------------------------------------
+    BODY & CONTAINER
+------------------------------------- */
+
+.body-wrapi {
+    background-color: #f6f6f6;
+    width: 100%;
+}
+
+
+.contenti {
+    max-width: 600px;
+    margin: 0 auto;
+    display: block;
+    padding: 20px;
+}
+
+/* -------------------------------------
+    HEADER, FOOTER, MAIN
+------------------------------------- */
+.maini {
+    background: #fff;
+    border: 1px solid #e9e9e9;
+    border-radius: 3px;
+}
+
+.content-wrapi {
+    padding: 20px;
+}
+
+.content-blocki {
+    padding: 0 0 20px;
+}
+
+.headeri {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.footeri {
+    width: 100%;
+    clear: both;
+    color: #999;
+    padding: 20px;
+}
+.footeri a {
+    color: #999;
+}
+.footeri p, .footeri a, .footeri unsubscribe, .footeri td {
+    font-size: 12px;
+}
+
+/* -------------------------------------
+    TYPOGRAPHY
+------------------------------------- */
+
+
+/* -------------------------------------
+    OTHER STYLES THAT MIGHT BE USEFUL
+------------------------------------- */
+.last {
+    margin-bottom: 0;
+}
+
+.first {
+    margin-top: 0;
+}
+
+.aligncenter {
+    text-align: center;
+}
+
+.alignright {
+    text-align: right;
+}
+
+.alignleft {
+    text-align: left;
+}
+
+.clear {
+    clear: both;
+}
+
+/* -------------------------------------
+    ALERTS
+    Change the class depending on warning email, good email or bad email
+------------------------------------- */
+
+/* -------------------------------------
+    INVOICE
+    Styles for the billing table
+------------------------------------- */
+.invoice {
+    margin: 40px auto;
+    text-align: left;
+    width: 80%;
+}
+.invoice td {
+    padding: 5px 0;
+}
+.invoice .invoice-items {
+    width: 100%;
+}
+.invoice .invoice-items td {
+    border-top: #eee 1px solid;
+}
+.invoice .invoice-items .total td {
+    border-top: 2px solid #333;
+    border-bottom: 2px solid #333;
+    font-weight: 700;
+}
+
+/* -------------------------------------
+    RESPONSIVE AND MOBILE FRIENDLY STYLES
+------------------------------------- */
+@media only screen and (max-width: 640px) {
+    
+    .container {
+        width: 100% !important;
+    }
+
+    .contenti, .content-wrapi {
+        padding: 10px !important;
+    }
+
+    .invoicei {
+        width: 100% !important;
+    }
+}
+.t{
+ border: 1px solid black;
+  border-collapse: collapse;
+}
+.mycheck{
+        display: inline-block;
+    width: 1em;
+    height: 1em;
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+    text-align: center;
+    border: 1px solid #d8d6d6;
+    border-radius: 0.3rem;
+}
+.mylabel{
+    font-size: 1.2rem;
+}
