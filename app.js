@@ -10,9 +10,33 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/static',express.static(__dirname+"/public"));
 // ===========================================================Uses========================================================
+
+
+
+
+// const MongoClient = require('mongodb').MongoClient;
+// const uri = "mongodb+srv://admin_mohammed:Mohammed52@cluster0-i0eix.mongodb.net/KhwajaDB";
+//  mongoose = new MongoClient(uri, { useNewUrlParser: true ,useUnifiedTopology: true});
+// mongoose.connect();
+// //client.connect(err => {
+// //   const collection = client.db("KhwajaDB").collection("bikes");
+// //   // console.log("Successfully");
+
+// // });
+
+
+
+
+
+
+
+
+
+
+
 mongoose.connect("mongodb+srv://admin_mohammed:Mohammed52@cluster0-i0eix.mongodb.net/KhwajaDB", {useNewUrlParser: true,useUnifiedTopology: true});
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
+// mongoose.set('useFindAndModify', false);
+ mongoose.set('useCreateIndex', true);
 // ===========================================================Declarations========================================================//
 // ===========================================================Schemas========================================================//
 const bikeSchema ={
@@ -151,6 +175,7 @@ const taskSchema={
 }
 const Task = mongoose.model("Task",taskSchema);
 
+
 // ===========================================================Schemas========================================================//
 
 
@@ -185,13 +210,13 @@ var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
   										
 
   													}});
-    						}else{res.render("dashboard",{capital:capital,balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:""});}});
+    						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:""});}});
 
 
 
 			}
 			});
-
+//res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[]});
 
 });
 
@@ -227,10 +252,9 @@ var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
 
 
 app.get("/bikes", function(req, res){
-  			Bike.find({}, function(err, bikeRecordes){
-   					res.render("bikes",{bikeRecorde:bikeRecordes,er:""});
-		 		});
-
+  			 Bike.find({}, function(err, bikeRecordes){
+   				res.render("bikes",{bikeRecorde:bikeRecordes,er:""});
+		 		 });
   });
 
 // ===========================================================Get Request========================================================//
