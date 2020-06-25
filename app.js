@@ -1484,15 +1484,16 @@ if(!amt=="" && !retrn==""){
 
 var month=new Date();
 		if(req.body.month){ month= new Date(req.body.month);}
+		console.log(month);
 month.setDate(month.getDate()-1);
 var today= new Date();
   var tdy=(1+ today.getMonth());
 
 Statistics.findOne({month:tdy},function(err,stRec){
     		if(stRec){
-  Statistics.findOne({date:{$gt:month}},function(err,Rec){
-   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec});}else{res.render("statistics",{statis:stRec,oldrec:[]});}});						
-					}else{res.render("statistics",{statis:[],oldrec:[]});}
+  Statistics.findOne({date:month},function(err,Rec){
+   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec});}else{res.render("statistics",{statis:stRec,oldrec:""});}});						
+					}else{res.render("statistics",{statis:[],oldrec:""});}
 				});
 
 
