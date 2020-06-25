@@ -1405,7 +1405,7 @@ var amt="";
 		if(req.body.retrne){retrn=req.body.retrne}
 var para = "";
 		if(req.body.para){para=req.body.para}
-var month="";
+var month=new Date();
 		if(req.body.month){ month= new Date(req.body.month);}
 var d =new Date(req.body.month);
 d.setDate(month.getDate() + 29);
