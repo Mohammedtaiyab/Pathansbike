@@ -1,32 +1,14 @@
 <%- include("header"); -%>
-
-
-  <div class="content">
+      <div class="content">
         <div class="container-fluid">
- 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- <div class="col-lg-6 col-md-6">
+            <div class="col-lg-6 col-md-6">
               <div class="card">
                 <div class="card-header card-header-tabs card-header-primary">
                   <div class="nav-tabs-navigation">
                     <div class="nav-tabs-wrapper">
-                     <h4> <span class="nav-tabs-title">Capital</span></h4>
+                     <h4> <span class="nav-tabs-title">User Details</span></h4>
                     </div>
                   </div>
                 </div>
@@ -35,26 +17,37 @@
                     <div class="tab-pane active" id="profile">
                       <table class="table">
                         <tbody>
-                        <th>Last Month Capital</th>
-                        <td>0</td>
+                        <th>User Name</th>
+                        <td> <%= user %></td>
                           
                         </tbody>
                       </table>
-                      <form action="/caital" method="post">
+                      <form action="/pass" method="post">
                           <div class="row">
                           <div class="col-md-6">
                                     <div class="form-group">
-                                    <label>Date </label>
-                                    <input type="month" class="form-control" name="date" >
+                                    <label>user name </label>
+                                    <input type="text" class="form-control" name="user" value="<%= user %>" >
                                      </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                     <label>Capital Amount</label>
-                                          <input type="text" name="amot" class="form-control">
+                                     <label>Old Password </label>
+                                          <input type="password" name="pass" class="form-control">
                                      </div>
                                 </div>
-                                 
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                     <label>New Password </label>
+                                          <input type="password" name="pass" class="form-control">
+                                     </div>
+                                </div>
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                     <label>Confirm Password </label>
+                                          <input type="text" name="cpass" class="form-control">
+                                     </div>
+                                </div>
                             <div class="col-md-4">
                                   <div class="form-group">
                                         <button type="submit" class="btn btn-primary pull-right">Save</button>
@@ -67,6 +60,12 @@
                 </div>
               </div>
             </div>
+            
+
+
+
+        
+            
 
 
 
@@ -80,8 +79,8 @@
 
 
 
+<script>document.getElementsByClassName('nav-item')[0].classList.add('active');
 
-</div>
-</div>
+</script>
 
-   <%- include("footer"); -%>
+      <%- include("footer"); -%>

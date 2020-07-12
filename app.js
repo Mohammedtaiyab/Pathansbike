@@ -2,13 +2,29 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require('mongoose');
-var uniqueValidator = require('mongoose-unique-validator');
-var DateOnly = require('mongoose-dateonly')(mongoose);
+// var uniqueValidator = require('mongoose-unique-validator');
+// var DateOnly = require('mongoose-dateonly')(mongoose);
+
+const session=require('express-session');
+const passport =require('passport');
+const passportLocalmangoose= require('passport-local-mongoose');
+
+
 const app = express();
+
+
 // ===========================================================Declarations========================================================
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/static',express.static(__dirname+"/public"));
+
+app.use(session({
+secret:"Its a Mufaddal Pathan Business Project",
+resave:false,
+saveUninitialized:false
+	}));
+app.use(passport.initialize());
+app.use(passport.session());
 // ===========================================================Uses========================================================
 
 
@@ -31,14 +47,26 @@ app.use('/static',express.static(__dirname+"/public"));
 
 
 
-
-
+//mongoose.connect("mongodb://localhost:27017/KhwajaDB",{ useNewUrlParser: true ,  useUnifiedTopology: true  });
 
 mongoose.connect("mongodb+srv://admin_mohammed:Mohammed52@cluster0-i0eix.mongodb.net/KhwajaDB", {useNewUrlParser: true,useUnifiedTopology: true});
-// mongoose.set('useFindAndModify', false);
+mongoose.set('useFindAndModify', false);
  mongoose.set('useCreateIndex', true);
 // ===========================================================Declarations========================================================//
 // ===========================================================Schemas========================================================//
+
+const userSchema = new mongoose.Schema({
+	email:String,
+	passport:String
+
+});
+userSchema.plugin(passportLocalmangoose);
+const User= new mongoose.model("User",userSchema);
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 const bikeSchema ={
 	bname : String,
 	model : Number,
@@ -178,7 +206,53 @@ const Task = mongoose.model("Task",taskSchema);
 
 // ===========================================================Schemas========================================================//
 
+app.get("/login", function(req, res){
+  res.render("login");
+});
 
+
+app.get("/register", function(req, res){
+  res.render("register");
+});
+
+app.post("/register", function(req, res){
+
+  User.register({username: req.body.username}, req.body.password, function(err, user){
+    if (err) {
+      console.log(err);
+      res.redirect("/register");
+    } else {
+      passport.authenticate("local")(req, res, function(){
+        res.redirect("/");
+      });
+    }
+  });
+
+});
+
+
+app.post("/login", function(req, res){
+
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
+
+  req.login(user, function(err){
+    if (err) {
+      console.log(err);
+    } else {
+      passport.authenticate("local")(req, res, function(){
+        res.redirect("/");
+      });
+    }
+  });
+
+});
+app.get("/logout", function(req, res){
+  req.logout();
+  res.redirect("/login");
+});
 // ===========================================================Get Request========================================================//
 app.get("/", function(req, res){
 	var purchase = 0;
@@ -192,12 +266,26 @@ app.get("/", function(req, res){
  var today= new Date();
  var tdy=(1+ today.getMonth());
 var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
+var last = new Date(month);
+ var lst=(1+ last.getMonth());
+last.setDate(last.getDate()-29);
 
-			Capital.findOne({date:{$gt:month}}, function(err, capRecordes){
-			if(capRecordes){capital =capRecordes.balance;
+
+if (req.isAuthenticated()){
+Statistics.findOne({month:tdy}, function(err, capRecordes){
+			if(!capRecordes){
+				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
+				tdy=tdy-1;
+			}
+
+
+
 							Statistics.findOne({month:tdy},function(err,stRec){
-    						if(stRec){	capital=(capital-stRec.purchase - stRec.expenses)+ stRec.sales;
-    									balance=capital+stRec.income+stRec.rent;
+    						if(stRec){
+    								
+    								capital=stRec.capital;	
+    							capital=(capital-stRec.purchase - stRec.expenses);
+    									balance=capital+stRec.income+stRec.rent+ stRec.sales;
     								Fund.find({date:{$gt:month}},function(err,funds){
   													if(funds){
   																funds.forEach(function(fund){
@@ -205,18 +293,32 @@ var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
    																debit=debit+fund.debit;})
    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
 
-   												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec});
+   												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
    											}})
   										
 
   													}});
-    						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:""});}});
+    						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
 
 
 
-			}
-			});
-//res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[]});
+
+
+
+
+
+
+  //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
+  
+
+});
+
+
+
+  } else {
+    res.redirect("/login");
+  }
+
 
 });
 
@@ -226,21 +328,23 @@ var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
 
 
 
-app.get("/expenditure",function(req,res){
+app.get("/expenditure",function(req,res){if (req.isAuthenticated()){
  var today= new Date();
  var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
 var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
 
 				Account.find({date:{$gte:month}},function(err,expinc){
    						if(expinc){
-   						res.render("expenditure",{expinc:expinc});
+   						res.render("expenditure",{expinc:expinc,user:req.user.username});
    						}else{console.log(err);}
    				});
 				
+} else {
+    res.redirect("/login");
+  }
+
 
 });
-
-
 
 
 
@@ -251,67 +355,96 @@ var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
 
 
 
-app.get("/bikes", function(req, res){
+app.get("/bikes", function(req, res){if (req.isAuthenticated()){
+
+
   			 Bike.find({}, function(err, bikeRecordes){
-   				res.render("bikes",{bikeRecorde:bikeRecordes,er:""});
+  			 res.render("bikes",{bikeRecorde:bikeRecordes,er:"",user:req.user.username});
 		 		 });
-  });
+ } else {
+    res.redirect("/login");
+  }
 
-// ===========================================================Get Request========================================================//
 
-
-app.get("/addbike",function(req,res){
-res.render("addbike",{er:""});
 });
+// ===========================================================Get Request========================================================//
+
+
+app.get("/addbike",function(req,res){if (req.isAuthenticated()){
+res.render("addbike",{er:"",user:req.user.username});
+}});
 
 // ===========================================================Get Request========================================================//
 
-app.get("/sale/:id",function(req,res){
+app.get("/sale/:id",function(req,res){if (req.isAuthenticated()){
 
 		Bike.findOne({_id:req.params.id},function(err,foundbike){
 				if(foundbike){
-						res.render("sale",{registerno:foundbike.registerno,pera:'sale',buyer:0,bike:foundbike,er:""});
+						res.render("sale",{registerno:foundbike.registerno,pera:'sale',buyer:0,bike:foundbike,er:"",user:req.user.username});
 					}
-					else{res.render("sale",{registerno:"",pera:'sale',buyer:0,bike:[],er:"Bike Details Missing"});}
+					else{res.render("sale",{registerno:"",pera:'sale',buyer:0,bike:[],er:"Bike Details Missing",user:req.user.username});}
 				});
-})
+} else {
+    res.redirect("/login");
+  }
 
+
+});
 // ===========================================================Get Request========================================================//
 
 
 
-app.get("/update/:id",function(req,res){
+app.get("/update/:id",function(req,res){if (req.isAuthenticated()){
 
 			Buyer.findOne({_id:req.params.id},function(err,foundbike){
 				if(foundbike){
 						
-						res.render("update",{registerno:foundbike.bike.registerno,pera:'Update',buyer:foundbike,er:""});
+						res.render("update",{registerno:foundbike.bike.registerno,pera:'Update',buyer:foundbike,er:"",user:req.user.username});
 				}
 				else
 				{
 					console.log(err)
 				}
 			});
-});
+} else {
+    res.redirect("/login");
+  }
 
+
+});
 // ===========================================================Get Request========================================================//
 
-app.get("/accounts",function(req,res){
+app.get("/accounts",function(req,res){if (req.isAuthenticated()){
 	var purchase = 0;
 	var balance =0;
 	var sales=0;
 	var credit=0;
 	var debit=0;
  var today= new Date();
- var tdy=(1+ today.getMonth());
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
+var month = new Date(today);
+var tdy=(1+ today.getMonth());
+ Statistics.findOne({month:tdy},function(err, capRecordes){
+ 	if(capRecordes){
+ 			 month.setDate(month.getDate()-(today.getDate()-1));
+ 			
+ 	}else{
+ 		
+
+ 				tdy=today.getMonth();
+		month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 1;
+		
+		
+ 	}
+
+ 		
+
 		Buyer.find({sdate:{$gte:month},due :0}, function(err, salesRecordes){
    			if(salesRecordes){Fund.find({date:{$gte:month}},function(err,funds){
    					if(funds){funds.forEach(function(fund){
    						credit=credit+fund.credit;debit=debit+fund.debit;})
    							Account.find({date:{$gte:month}},function(err,AccountRecords){
-   								if(AccountRecords){Capital.findOne({date:{$gte:month}}, function(err, capRecordes){
-   									if(capRecordes){balance =capRecordes.balance;
+   								if(AccountRecords){Statistics.findOne({month:tdy-1}, function(err, capRecordes){
+   									if(capRecordes){console.log(capRecordes);balance =capRecordes.capital;
 										Bike.find({bdate:{$gte:month}}, function(err, bikeRecordes){
 				 							if(bikeRecordes){bikeRecordes.forEach(function(price){
    								 					purchase = purchase + price.totalcost;})
@@ -320,7 +453,7 @@ var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
    														sales=sales+sale.paid;})
    													Statistics.findOne({month:tdy},function(err,stRec){
     													if(stRec){
-res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,acc:AccountRecords,balance:balance,totsale:sales,totpurch:purchase,rent:stRec.rent,date:month});
+												res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,acc:AccountRecords,balance:balance,totsale:sales,totpurch:purchase,rent:stRec.rent,date:month,user:req.user.username});
 												}else{console.log(err)}
 												});
 													}else{console.log(err)}
@@ -341,42 +474,72 @@ res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,
    										
    											}else{console.log(err);}
    								});
-	
-});
 
+
+
+
+
+
+ });
+
+				// ================================Last Month=======================//
+
+
+
+
+
+
+
+
+res.render("accounts",{salesRecordes:[],dailyex:"",dailyin:"",acc:[],balance:"",totsale:"",totpurch:"",rent:"",date:month,user:req.user.username});
+
+} else {
+    res.redirect("/login");
+  }
+
+
+});
 
 // ===========================================================Get Request========================================================//
 
 
-app.get("/saleList",function(req,res){
+app.get("/saleList",function(req,res){if (req.isAuthenticated()){
 	Buyer.find({}, function(err, salesRecordes){
-   					res.render("saleList",{salesRecorde:salesRecordes,er:""});
+   					res.render("saleList",{salesRecorde:salesRecordes,er:"",user:req.user.username});
 		 		});
-});
+} else {
+    res.redirect("/login");
+  }
 
+
+});
 
 
 // ===========================================================Get Request========================================================//
 
 
 
-app.get("/update/bike/:id",function(req,res){
+app.get("/update/bike/:id",function(req,res){if (req.isAuthenticated()){
 	Bike.findOne({_id:req.params.id}, function(err, bikeRecordes){
 				 			if(bikeRecordes){
-								res.render("updatebike",{bikeR:bikeRecordes,er:""});
+								res.render("updatebike",{bikeR:bikeRecordes,er:"",user:req.user.username});
 							}
 							else
 							{
-								res.render("updatebike",{bikeR:[],er:"Something Went Wrong"});
+								res.render("updatebike",{bikeR:[],er:"Something Went Wrong",user:req.user.username});
 							}
 						});
-});
+} else {
+    res.redirect("/login");
+  }
 
+
+});
 // ===========================================================Get Request========================================================//
 
 
 
-app.get("/repurchase/:regs",function(req,res){
+app.get("/repurchase/:regs",function(req,res){if (req.isAuthenticated()){
 	var regs=req.params.regs;
 		
 		Buyer.findOne({'bike.registerno':regs}, function(err, salesRecordes){
@@ -423,9 +586,12 @@ app.get("/repurchase/:regs",function(req,res){
 		}});
 
 			
+} else {
+    res.redirect("/login");
+  }
+
+
 });
-
-
 
 
 
@@ -435,42 +601,49 @@ app.get("/repurchase/:regs",function(req,res){
 // ===========================================================Get Request========================================================//
 
 
-app.get("/history",function(req,res){
+app.get("/history",function(req,res){if (req.isAuthenticated()){
 	Bikehistory.find({},function(err,history){
 		if(history){
-			console.log(history)
-				res.render("history",{bikes:history,one:""});
+				res.render("history",{bikes:history,one:"",user:req.user.username});
 		}
 	})
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 
 
 
-
 // ===========================================================Get Request========================================================//
 
 // ===========================================================Get Request========================================================//
 
 
-app.get("/history/:regs",function(req,res){
+app.get("/history/:regs",function(req,res){if (req.isAuthenticated()){
 	Bikehistory.find({},function(err,history){
 		if(history){
 					Bikehistory.findOne({registerno:req.params.regs},function(err,oneRecord){
-				res.render("history",{bikes:history,one:oneRecord});
+				res.render("history",{bikes:history,one:oneRecord,user:req.user.username});
 			});
 		}
 	});
-});
+} else {
+    res.redirect("/login");
+  }
 
+
+});
 
 
 
 // ===========================================================Get Request========================================================//
 
-app.get("/rent/:regs",function(req,res){
+app.get("/rent/:regs",function(req,res){if (req.isAuthenticated()){
 		Bike.findOne({registerno:req.params.regs},function(err,foundbike){
 					if (foundbike) {
-						res.render("rent",{bikeR:foundbike});
+						res.render("rent",{bikeR:foundbike,user:req.user.username});
 					}else{
 						console.log(err);
 					}
@@ -478,13 +651,18 @@ app.get("/rent/:regs",function(req,res){
 
 
 			
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 // ===========================================================Get Request========================================================//
 
-app.get("/rent",function(req,res){
+app.get("/rent",function(req,res){if (req.isAuthenticated()){
 		
 			Rent.find({},function(err,rentRecorde){
-				if(rentRecorde){res.render("rentdata",{rentRecorde:rentRecorde});}
+				if(rentRecorde){res.render("rentdata",{rentRecorde:rentRecorde,user:req.user.username});}
 			})
 
 
@@ -493,20 +671,30 @@ app.get("/rent",function(req,res){
 
 
 			
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 // ===========================================================Get Request========================================================//
 
-app.get("/updaterent/:id",function(req,res){
+app.get("/updaterent/:id",function(req,res){if (req.isAuthenticated()){
 
 			Rent.findOne({_id:req.params.id},function(err,rentRecorde){
-				if(rentRecorde){res.render("updaterent",{bikeR:rentRecorde});}
+				if(rentRecorde){res.render("updaterent",{bikeR:rentRecorde,user:req.user.username});}
 				else{console.log(err)}
 			});
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 
 // ===========================================================Get Request========================================================//
 
-app.get("/statis",function(req,res){
+app.get("/statis",function(req,res){if (req.isAuthenticated()){
 var purchase = 0;
 	var credit=0;
 	var debit=0;
@@ -562,13 +750,18 @@ Fund.find({date:{$gte:month}},function(err,funds){
    													
 	res.redirect("/");
 
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 
 
 
 // ===========================================================Get Request========================================================//
 
-app.get("/statistics",function(req,res){
+app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 
 var today= new Date();
   var tdy=(1+ today.getMonth());
@@ -576,17 +769,111 @@ var today= new Date();
 Statistics.findOne({month:tdy},function(err,stRec){
     		if(stRec){
 
-			res.render("statistics",{statis:stRec,oldrec:""});
+			res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});
 														
-						}else{res.render("statistics",{statis:[],oldrec:""});}
+						}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
 					});
+} else {
+    res.redirect("/login");
+  }
+
+
 });
 
 
 // ===========================================================Get Request========================================================//
 
+app.get("/edit",function(req,res){
+
+	if (req.isAuthenticated()){
+var purchase = 0;
+	var balance =0;
+	var sales=0;
+	var credit=0;
+	var debit=0;
+	var inccredit=0;
+	var expdebit=0;
+	var capital =0;
+ var today= new Date();
+ var tdy=(1+ today.getMonth());
+var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
+var last = new Date(month);
+ var lst=(1+ last.getMonth());
+last.setDate(last.getDate()-29);
 
 
+
+
+Statistics.findOne({month:tdy}, function(err, capRecordes){
+			if(!capRecordes){
+				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
+				tdy=tdy-1;
+			}
+
+
+
+							Statistics.findOne({month:tdy},function(err,stRec){
+    						if(stRec){
+    								
+    								capital=stRec.capital;	
+    							capital=(capital-stRec.purchase - stRec.expenses);
+    									balance=capital+stRec.income+stRec.rent+ stRec.sales;
+    								Fund.find({date:{$gt:month}},function(err,funds){
+  													if(funds){
+  																funds.forEach(function(fund){
+   																credit=credit+fund.credit;
+   																debit=debit+fund.debit;})
+   											Task.find({date:{$lt:today}},function(err,rec){if(rec){
+
+   												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
+   											}})
+  										
+
+  													}});
+    						}else{res.render("edit",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
+
+
+
+
+
+
+
+
+
+  //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
+  
+
+});
+
+} else {
+    res.redirect("/login");
+  }
+
+
+});
+// ===========================================================Get Request========================================================//
+
+app.get("/setting",function(req,res){
+
+	if (req.isAuthenticated()){
+			res.render("setting",{user:req.user.username})
+
+
+} else {
+    res.redirect("/login");
+  }
+
+
+});
+// ===========================================================Get Request========================================================//
+
+app.get("/capital",function(req,res){if (req.isAuthenticated()){
+	res.render("capital",{user:req.user.username});
+	} else {
+    res.redirect("/login");
+  }
+});
+// ===========================================================Get Request========================================================//
 
 
 // ===========================================================Post Request========================================================//
@@ -616,6 +903,7 @@ app.post("/search/account",function(req,res){
  var today= new Date(req.body.month);
  var tdy=(1+ today.getMonth());
 var month= today.getFullYear() + "-"+ (1+today.getMonth()) + "-" + 1;
+console.log(month);
 var betmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
 		Buyer.find({sdate:{$gte:month, $lt : betmonth},due :0}, function(err, salesRecordes){
    			if(salesRecordes){Fund.find({date:{$gte:month, $lt : betmonth}},function(err,funds){
@@ -632,7 +920,7 @@ var betmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
    														sales=sales+sale.paid;})
    													Statistics.findOne({month:tdy},function(err,stRec){
     													if(stRec){
-res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,acc:AccountRecords,balance:balance,totsale:sales,totpurch:purchase,rent:stRec.rent,date:month});
+res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,acc:AccountRecords,balance:balance,totsale:sales,totpurch:purchase,rent:stRec.rent,date:month,user:req.user.username});
 												}else{console.log(err)}
 												});
 													}else{console.log(err)}
@@ -853,9 +1141,9 @@ if(!req.body.recieve){rec="false"}
     			
     				});
     	
-       res.render("addbike",{er:"Successfully Added"});
+       res.render("addbike",{er:"Successfully Added",user:req.user.username});
     }else{
-    		 res.render("addbike",{er:"Already Exists!"});
+    		 res.render("addbike",{er:"Already Exists!",user:req.user.username});
     }
   });
 });
@@ -936,6 +1224,7 @@ app.post("/capital",function(req,res){
 	var withdraw=req.body.amount;
 	var newcapital=oldcapital-withdraw;
 	var date=new Date(req.body.date);
+	console.log(date);
 var month= date.getFullYear() + "-"+ (2+ date.getMonth()) + "-" + 1;
 var lass=(1+  date.getMonth());
 var acc=(2+  date.getMonth());
@@ -1256,32 +1545,32 @@ app.post("/search/bike",function(req,res){
 
 if(!rc=="" && !ava==""){
 	Bike.find({rc:rc,receive:"true",status:"Available"},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});
 			})
 
 }
 else if(!ava==""){
 				if(ava==="rent"){
 					Bike.find({rent:"true"},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});
 								
 					});
 				}
 				else if(ava==="sold"){
 					Bike.find({status:"Sold"},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});
 					});
 				}
 			else{
 
 			Bike.find({receive:ava,status:"Available"},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});
 			})
 			}
 	}
 	else if(!rc==""){
 			Bike.find({rc:"true"},function(err,reCorde){
-				res.render("bikes",{bikeRecorde:reCorde,er:""});
+				res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});
 			})
 	}
 
@@ -1293,39 +1582,39 @@ else if(!ava==""){
 										if(regsRecorde){if(regsRecorde==""){
 												 Bike.find({chasisno:{$regex: req.body.para, $options: 'i'}}, function(err,chasisRecorde){
 												 		if(chasisRecorde){if(chasisRecorde==""){res.render("bikes",{bikeRecorde:chasisRecorde,er:"Couldn't Find Data"});}
-												 			else{res.render("bikes",{bikeRecorde:chasisRecorde,er:""});}
+												 			else{res.render("bikes",{bikeRecorde:chasisRecorde,er:"",user:req.user.username});}
 												 		}
 												 });
 										}
-												else{res.render("bikes",{bikeRecorde:regsRecorde,er:""});}
+												else{res.render("bikes",{bikeRecorde:regsRecorde,er:"",user:req.user.username});}
 									}
 										
 													});
 
 							}
-								else{res.render("bikes",{bikeRecorde:nameRecorde,er:""});}
+								else{res.render("bikes",{bikeRecorde:nameRecorde,er:"",user:req.user.username});}
 
 
 					}
 					else
 					{
 						
-						res.render("bikes",{bikeRecorde:nameRecorde,er:"Couldn't Find Data"});
+						res.render("bikes",{bikeRecorde:nameRecorde,er:"Couldn't Find Data",user:req.user.username});
 					}
    					
 		 		});
 	}else if(!month==""){
 		Bike.find({purchasemonth:month},function(err,reCorde){
 				if(reCorde){console.log(month);
-					res.render("bikes",{bikeRecorde:reCorde,er:""});}
-				else{res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data"});}
+					res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});}
+				else{res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data",user:req.user.username});}
 								
 					});
 	}
 
 		else{
 			//res.redirect("bikes");
-			res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data"});
+			res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data",user:req.user.username});
 		}
 
 })
@@ -1343,12 +1632,12 @@ var month="";
 		if(req.body.month){ month=1 + new Date(req.body.month).getMonth();}
 if(!rc=="" && !del==""){
 	Buyer.find({rc:rc,delivery:del},function(err,reCorde){
-				res.render("saleList",{salesRecorde:reCorde,er:""});
+				res.render("saleList",{salesRecorde:reCorde,er:"",user:req.user.username});
 			});
 
 }else if(!del==""){
 	Buyer.find({delivery:del},function(err,reCorde){
-				res.render("saleList",{salesRecorde:reCorde,er:""});
+				res.render("saleList",{salesRecorde:reCorde,er:"",user:req.user.username});
 			});
 }else if(!para==""){
 
@@ -1359,25 +1648,25 @@ if(!rc=="" && !del==""){
 										if(regsRecorde){if(regsRecorde==""){
 												 Buyer.find({contact:parseInt(req.body.para)}, function(err,chasisRecorde){
 												 		if(chasisRecorde){if(chasisRecorde==""){console.log("Not Found")}
-												 			else{res.render("saleList",{salesRecorde:chasisRecorde,er:""});}
+												 			else{res.render("saleList",{salesRecorde:chasisRecorde,er:"",user:req.user.username});}
 												 	
-												 		}else{res.render("saleList",{salesRecorde:regsRecorde,er:"Couldn't Find Data!!"});}
+												 		}else{res.render("saleList",{salesRecorde:regsRecorde,er:"Couldn't Find Data!!",user:req.user.username});}
 												 });
 										}
-												else{res.render("saleList",{salesRecorde:regsRecorde,er:""});}
+												else{res.render("saleList",{salesRecorde:regsRecorde,er:"",user:req.user.username});}
 									}
 										
 													});
 
 							}
-								else{res.render("saleList",{salesRecorde:nameRecorde,er:""});}
+								else{res.render("saleList",{salesRecorde:nameRecorde,er:"",user:req.user.username});}
 
 
 					}
 					else
 					{
 						
-						res.render("saleList",{salesRecorde:nameRecorde,er:"Record Not Found For name"});
+						res.render("saleList",{salesRecorde:nameRecorde,er:"Record Not Found For name",user:req.user.username});
 					}
    					
 		 		});
@@ -1387,7 +1676,7 @@ if(!rc=="" && !del==""){
 
 }else if(!month==""){
 			Buyer.find({salemonth:month},function(err,reCorde){
-				res.render("saleList",{salesRecorde:reCorde,er:""});
+				res.render("saleList",{salesRecorde:reCorde,er:"",user:req.user.username});
 			});
 	}else{
 			res.redirect("saleList");
@@ -1412,16 +1701,16 @@ d.setDate(month.getDate() + 29);
 if(!amt=="" && !retrn==""){
 				if(amt=="true"){
 						Rent.find({due:{$gt:0},status:retrn},function(err,reCorde){
-						 res.render("rentdata",{rentRecorde:reCorde,er:""});
+						 res.render("rentdata",{rentRecorde:reCorde,er:"",user:req.user.username});
 			});
 				}else{
 
 					Rent.find({due:0,status:retrn},function(err,reCorde){
-				 res.render("rentdata",{rentRecorde:reCorde,er:""});
+				 res.render("rentdata",{rentRecorde:reCorde,er:"",user:req.user.username});
 						});
 				}
 }else if(!retrn==""){Rent.find({status:retrn},function(err,reCorde){
-						 res.render("rentdata",{rentRecorde:reCorde,er:""});
+						 res.render("rentdata",{rentRecorde:reCorde,er:"",user:req.user.username});
 			});
 }else if(!para==""){
 
@@ -1433,32 +1722,32 @@ if(!amt=="" && !retrn==""){
 										if(regsRecorde){if(regsRecorde==""){
 												 Rent.find({contact:parseInt(req.body.para)}, function(err,chasisRecorde){
 												 		if(chasisRecorde){if(chasisRecorde==""){console.log("Not Found")}
-												 			else{res.render("rentdata",{rentRecorde:chasisRecorde,er:""});}
+												 			else{res.render("rentdata",{rentRecorde:chasisRecorde,er:"",user:req.user.username});}
 												 	
-												 		}else{res.render("rentdata",{rentRecorde:regsRecorde,er:"Couldn't Find Data!!"});}
+												 		}else{res.render("rentdata",{rentRecorde:regsRecorde,er:"Couldn't Find Data!!",user:req.user.username});}
 												 });
 										}
-												else{res.render("rentdata",{rentRecorde:regsRecorde,er:""});}
+												else{res.render("rentdata",{rentRecorde:regsRecorde,er:"",user:req.user.username});}
 									}
 										
 													});
 
 							}
-								else{res.render("rentdata",{rentRecorde:nameRecorde,er:""});}
+								else{res.render("rentdata",{rentRecorde:nameRecorde,er:"",user:req.user.username});}
 
 
 					}
 					else
 					{
 						
-						res.render("rentdata",{rentRecorde:nameRecorde,er:"Record Not Found For name"});
+						res.render("rentdata",{rentRecorde:nameRecorde,er:"Record Not Found For name",user:req.user.username});
 					}
    					
 		 		});
 }else if(!month==""){
 		Rent.find({hdate:{$gt:month,$lt:d}},function(err,reCorde){
 				
-						 res.render("rentdata",{rentRecorde:reCorde,er:""});
+						 res.render("rentdata",{rentRecorde:reCorde,er:"",user:req.user.username});
 			});
 	
 
@@ -1492,8 +1781,8 @@ var today= new Date();
 Statistics.findOne({month:tdy},function(err,stRec){
     		if(stRec){
   Statistics.findOne({date:month},function(err,Rec){
-   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec});}else{res.render("statistics",{statis:stRec,oldrec:""});}});						
-					}else{res.render("statistics",{statis:[],oldrec:""});}
+   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec});}else{res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});}});						
+					}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
 				});
 
 
@@ -1507,3 +1796,6 @@ if(port == null || port == ""){port = 3000;}
 app.listen(port, function() {
   console.log("Server started Successfully");
 });
+// app.listen(3000, function() {
+//   console.log("Server started on port 3000");
+// });

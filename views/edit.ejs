@@ -1,136 +1,13 @@
 <%- include("header"); -%>
-      <div class="content">
+
+
+<div class="content">
         <div class="container-fluid">
-          <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                   <img src="/static/img/money.png">
-                  </div>
-                  <p class="card-category">Capital</p>
-                  <h4 class="card-title"><span>₹<%= capital %></span></h4>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                    <!--i class="material-icons text-danger">edit</i>
-                    <a href="" >Edit Capital</a-->
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
- <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                   <img src="/static/img/balance.png">
-                  </div>
-                  <p class="card-category">Balance</p>
-                  <h4 class="card-title"><span>₹<%= balance %></span></h4>
-                </div>
-                <div class="card-footer">
-                 
-                </div>
-              </div>
-            </div>
-
-</div>
-
-            <div class="col-lg-6 col-md-6">
-              <div class="card">
-                <div class="card-header card-header-tabs card-header-primary">
-                  <div class="nav-tabs-navigation">
-                    <div class="nav-tabs-wrapper">
-                     <h4> <span class="nav-tabs-title">Today's Tasks:</span></h4>
-                    </div>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <div class="tab-content">
-                    <div class="tab-pane active" id="profile">
-                      <table class="table">
-                        <tbody>
-                            
-                            <% todo.forEach(function(task){ %>
-                              <tr>
-                              <td>
-                              <form action="/delete" method="post" class="form-check">
-                        <input type="checkbox" name="idchk" onChange="this.form.submit()" value="<%= task._id  %>">
-                       
-                                </form>
-                                </td> <!-- <% var d= task.date.getDate(); m=1+task.date.getMonth();y=task.date.getYear()%100 %>
-                     
-                                     <td> <%= d + "/" + m +"/"+y%></td-->
-                                  <td><%= task.task %></td>
-                                <td class="td-actions text-right">
-                            </td>
-                          </tr>
-
-                           <% }) %>
-                          
-                        </tbody>
-                      </table>
-                      <form action="/task" method="post">
-                          <div class="row">
-                          <div class="col-md-4">
-                                    <div class="form-group">
-                                    <input type="date" class="form-control" name="date" >
-                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                          <input type="text" name="desc" placeholder="Discription" class="form-control">
-                                     </div>
-                                </div>
-                            <div class="col-md-2">
-                                  <div class="form-group">
-                                        <button type="submit" class="btn btn-primary pull-right">ADD</button>
-                                  </div>
-                              </div>
-                    </div>
-                    </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
+  
 
 
 
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle"><strong>Capital</strong></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      
-              <div class="card">
+ <div class="card">
                 <div class="card-header card-header-tabs card-header-primary">
                   <div class="nav-tabs-navigation">
                     <div class="nav-tabs-wrapper">
@@ -293,19 +170,15 @@
 
 
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        
-      </div>
-    </div>
-  </div>
+
+</div>
 </div>
 
 
 
-<script>document.getElementsByClassName('nav-item')[0].classList.add('active');
 
-</script>
 
-      <%- include("footer"); -%>
+
+
+
+ <%- include("footer"); -%>
