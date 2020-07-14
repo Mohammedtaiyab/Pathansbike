@@ -271,17 +271,15 @@ app.get("/", function(req, res){if (req.isAuthenticated()){
 	var expdebit=0;
 	var capital =0;
  var today= new Date();
-month= new Date(today.getFullYear()+"/"+ (1+today.getMonth()));
+month= new Date();
 var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
-
-Statistics.findOne({month:month}, function(err, capRecordes){
+Statistics.findOne({date:{$lt:month}}, function(err, capRecordes){
 			if(!capRecordes){
-				month1=month.getFullYear() + "-"+ ((month.getMonth()));
-				month=new Date(month1);
-				last = new Date(month.getFullYear() + "/" + (month.getMonth()));
+				month.setMonth(month.getMonth()-1);
 			}
-Statistics.findOne({month:month},function(err,stRec){
+	
+Statistics.findOne({date:{$lt:month}},function(err,stRec){
     						if(stRec){
     							
     								capital=stRec.capital;	
@@ -1088,16 +1086,19 @@ if(!req.body.receive){rec="false"}
 
 app.post("/capital",function(req,res){
 var date=new Date(req.body.date);
-
-var acc=new Date();
 var capital=req.body.capitala;
+
+
+date.setDate(1);
+
+var acc=new Date(date);
 var d = date.getDate(); 
-var m = date.getMonth(); 
-acc.setDate(d);
+var m =date.getMonth();
 acc.setMonth(m);
+acc.setDate(date.getDate());
 var month=new Date(acc);
 month.setDate(acc.getDate()-1);
-console.log(month);
+
 
  Statistics.findOne({date:acc},function(err,rst){
 	if(rst){
