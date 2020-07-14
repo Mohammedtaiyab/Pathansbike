@@ -105,8 +105,7 @@ const buyerSchema={
 	snote : String,
 	rc: { type: Boolean, default: false },
 	delivery: { type: Boolean, default: false },
-	clearmonth:Number,
-	salemonth:Number,
+	clearmonth:Date,
 	guarantee:String,
 	bike: bikeSchema
 }
@@ -162,6 +161,19 @@ const expincSchema={
 	},
 }
 const Account=mongoose.model("Account",expincSchema);
+const inoutSchema={
+	date:Date,
+	description:String,
+	credit:{
+		type:Number,
+		default:0
+	},
+	debit:{
+		type:Number,
+		default:0
+	},
+}
+const Extra=mongoose.model("Extra",inoutSchema);
 
 const rentSchema ={
 	bname : String,
@@ -183,7 +195,7 @@ const Rent=mongoose.model("Rent",rentSchema);
 
 const statisSchema={
 	date:Date,
-	month:Number,
+	month:Date,
 	capital: { type: Number, default:0 },
 	purchase: { type: Number, default:0 },
 	sales: { type: Number, default:0 },
@@ -254,7 +266,7 @@ app.get("/logout", function(req, res){
   res.redirect("/login");
 });
 // ===========================================================Get Request========================================================//
-app.get("/", function(req, res){
+app.get("/", function(req, res){if (req.isAuthenticated()){
 	var purchase = 0;
 	var balance =0;
 	var sales=0;
@@ -264,33 +276,31 @@ app.get("/", function(req, res){
 	var expdebit=0;
 	var capital =0;
  var today= new Date();
- var tdy=(1+ today.getMonth());
-var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
-var last = new Date(month);
- var lst=(1+ last.getMonth());
-last.setDate(last.getDate()-29);
-
-
-if (req.isAuthenticated()){
-Statistics.findOne({month:tdy}, function(err, capRecordes){
+month= new Date(today);
+var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
+ var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
+Statistics.findOne({month:last,date:{$gt:today}}, function(err, capRecordes){
 			if(!capRecordes){
-				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
-				tdy=tdy-1;
+				month1=month.getFullYear() + "-"+ ((month.getMonth()+1));
+				month=new Date(month1);
+				last = new Date(month.getFullYear() + "/" + (month.getMonth()));
 			}
 
-
-
-							Statistics.findOne({month:tdy},function(err,stRec){
+// 	console.log(month);
+// console.log(last);
+  
+Statistics.findOne({month:last,date:{$gt:today}},function(err,stRec){
     						if(stRec){
-    								
+    							
     								capital=stRec.capital;	
     							capital=(capital-stRec.purchase - stRec.expenses);
     									balance=capital+stRec.income+stRec.rent+ stRec.sales;
-    								Fund.find({date:{$gt:month}},function(err,funds){
+    								Fund.find({date:{$lt:month,$gt:last}},function(err,funds){
   													if(funds){
   																funds.forEach(function(fund){
    																credit=credit+fund.credit;
    																debit=debit+fund.debit;})
+   															balance=(balance-debit)+credit;
    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
 
    												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
@@ -300,18 +310,9 @@ Statistics.findOne({month:tdy}, function(err, capRecordes){
   													}});
     						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
 
-
-
-
-
-
-
-
-
-  //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
-  
-
 });
+
+//res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
 
 
 
@@ -640,8 +641,8 @@ app.get("/history/:regs",function(req,res){if (req.isAuthenticated()){
 
 // ===========================================================Get Request========================================================//
 
-app.get("/rent/:regs",function(req,res){if (req.isAuthenticated()){
-		Bike.findOne({registerno:req.params.regs},function(err,foundbike){
+app.get("/rent/:id",function(req,res){if (req.isAuthenticated()){
+		Bike.findOne({_id:req.params.id},function(err,foundbike){
 					if (foundbike) {
 						res.render("rent",{bikeR:foundbike,user:req.user.username});
 					}else{
@@ -703,19 +704,14 @@ var purchase = 0;
  var today= new Date();
   var tdy=(1+ today.getMonth());
 var month= today.getFullYear() + "-"+ ( today.getMonth()) + "-" + 31;
-Fund.find({date:{$gte:month}},function(err,funds){
-   		if(funds){
-   				funds.forEach(function(fund){
-   							credit=credit+fund.credit;
-   							debit=debit+fund.debit;})
-   							
+
 							Account.find({date:{$gte:month}},function(err,expinc){
    									if(expinc){
    								expinc.forEach(function(acc){
    										inccredit=inccredit+acc.credit;
    										expdebit=expdebit+acc.debit;})
    								
-   											Statistics.find({month:tdy},function(err,stRec){
+   											Statistics.find({month:month},function(err,stRec){
     							if(stRec){
     								
     									if(stRec.length==0){
@@ -728,7 +724,7 @@ Fund.find({date:{$gte:month}},function(err,funds){
     									statis.save();
     									}
     									else{
-    											Statistics.updateOne({month:tdy},{expenses:expdebit+debit,income:inccredit+credit},function(err,res){if(!err){
+    											Statistics.updateOne({month:month},{expenses:expdebit+debit,income:inccredit+credit},function(err,res){if(!err){
 
     												
 
@@ -745,10 +741,8 @@ Fund.find({date:{$gte:month}},function(err,funds){
    															}
    														});
    															
-   													}else{console.log(err);}
-   												});
    													
-	res.redirect("/");
+	res.redirect("/expenditure");
 
 } else {
     res.redirect("/login");
@@ -764,11 +758,11 @@ Fund.find({date:{$gte:month}},function(err,funds){
 app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 
 var today= new Date();
-  var tdy=(1+ today.getMonth());
 
-Statistics.findOne({month:tdy},function(err,stRec){
+
+Statistics.findOne({date:{$gt:today}},function(err,stRec){
     		if(stRec){
-
+    			
 			res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});
 														
 						}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
@@ -786,51 +780,45 @@ Statistics.findOne({month:tdy},function(err,stRec){
 app.get("/edit",function(req,res){
 
 	if (req.isAuthenticated()){
-var purchase = 0;
-	var balance =0;
-	var sales=0;
 	var credit=0;
 	var debit=0;
-	var inccredit=0;
-	var expdebit=0;
-	var capital =0;
  var today= new Date();
- var tdy=(1+ today.getMonth());
-var month= today.getFullYear() + "-"+ (today.getMonth()) + "-" + 31;
-var last = new Date(month);
- var lst=(1+ last.getMonth());
-last.setDate(last.getDate()-29);
+var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
+
+Fund.find({date:{$lt:month,$gt:last}},function(err,funds){
+  if(funds){
+res.render("edit",{acc:funds,user:req.user.username});
+  }else{
+  	res.render("edit",{acc:[],user:req.user.username});
+    }
+});
+// Statistics.findOne({month:tdy}, function(err, capRecordes){
+// 			if(!capRecordes){
+// 				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
+// 				tdy=tdy-1;
+// 			}
 
 
 
-
-Statistics.findOne({month:tdy}, function(err, capRecordes){
-			if(!capRecordes){
-				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
-				tdy=tdy-1;
-			}
-
-
-
-							Statistics.findOne({month:tdy},function(err,stRec){
-    						if(stRec){
+// 							Statistics.findOne({month:tdy},function(err,stRec){
+//     						if(stRec){
     								
-    								capital=stRec.capital;	
-    							capital=(capital-stRec.purchase - stRec.expenses);
-    									balance=capital+stRec.income+stRec.rent+ stRec.sales;
-    								Fund.find({date:{$gt:month}},function(err,funds){
-  													if(funds){
-  																funds.forEach(function(fund){
-   																credit=credit+fund.credit;
-   																debit=debit+fund.debit;})
-   											Task.find({date:{$lt:today}},function(err,rec){if(rec){
+//     								capital=stRec.capital;	
+//     							capital=(capital-stRec.purchase - stRec.expenses);
+//     									balance=capital+stRec.income+stRec.rent+ stRec.sales;
+//     								Fund.find({date:{$gt:month}},function(err,funds){
+//   													if(funds){
+//   																funds.forEach(function(fund){
+//    																credit=credit+fund.credit;
+//    																debit=debit+fund.debit;})
+//    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
 
-   												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
-   											}})
+//    												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
+//    											}})
   										
 
-  													}});
-    						}else{res.render("edit",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
+//   													}});
+//     						}else{});
 
 
 
@@ -840,10 +828,10 @@ Statistics.findOne({month:tdy}, function(err, capRecordes){
 
 
 
-  //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
+//   //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
   
 
-});
+// });
 
 } else {
     res.redirect("/login");
@@ -903,7 +891,6 @@ app.post("/search/account",function(req,res){
  var today= new Date(req.body.month);
  var tdy=(1+ today.getMonth());
 var month= today.getFullYear() + "-"+ (1+today.getMonth()) + "-" + 1;
-console.log(month);
 var betmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
 		Buyer.find({sdate:{$gte:month, $lt : betmonth},due :0}, function(err, salesRecordes){
    			if(salesRecordes){Fund.find({date:{$gte:month, $lt : betmonth}},function(err,funds){
@@ -954,7 +941,7 @@ res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,
 app.post("/rent",function(req,res){
 var accmonth=0;
 var today= new Date(req.body.hdate);
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
+var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
 var betwmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
 var tdy=(1+ today.getMonth());
 if(req.body.due==0){accmonth=tdy}
@@ -978,39 +965,21 @@ bikerent =new Rent({
 
 
 bikerent.save(function(err){
-	if(!err){	
-					
-    		Statistics.find({month:tdy},function(err,stRec){
-    			if(stRec){
-    				if(stRec.length==0){
-    						statis = new Statistics({
-    										date:month,
-    										rent:req.body.receive,
-    										month:tdy
-    								});
-    									statis.save();
+	if(!err){			
+
+Statistics.updateOne({month:month},{$inc:{'rent':req.body.receive}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
     									
-    								}else{
-    									Statistics.updateOne({month:tdy},{$inc:{'rent':req.body.receive}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    									
-    								}
-    												
-    				   }	
+
+    	Bike.updateOne({registerno:req.body.registerno},{rent:"true"},function(err,foundbike){
+    				if(foundbike){ res.redirect("/rent");}
+    				});
+    		 }	
     	
     	});
     		
 
 
-
-
-
-
-		Bike.updateOne({registerno:req.body.registerno},{rent:"true"},function(err,foundbike){
-    				if(foundbike){ res.redirect("/rent");}
-    				});
-       			
-	}
-})
+		
 
 });
 
@@ -1026,13 +995,13 @@ app.post("/updaterent",function(req,res){
 		var accmonth="0";
 		var ret=req.body.return;
 		var today= new Date();
-		var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
+		var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
  		var tdy=(1+ today.getMonth());
  		var due=req.body.due;
  		var rentrec=req.body.receive-req.body.oldrec;
 if(!req.body.due){due=0;}
 if(due===0){accmonth=tdy;}
-if(req.body.rdate){today=req.body.rdate}
+if(req.body.rdate){today=new Date(req.body.rdate),month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));}
 if(!req.body.return){ret="true"}
 	Rent.updateOne({_id:req.body.id},{
 			name:req.body.name,
@@ -1048,47 +1017,20 @@ if(!req.body.return){ret="true"}
 
 	},function(err,rentdata){
 		if(rentdata){
-						
-						Statistics.find({month:tdy},function(err,stRec){
-    			if(stRec){
-    				if(stRec.length==0){
-    						statis = new Statistics({
-    										date:month,
-    										rent:req.body.receive,
-    										month:tdy
-    								});
-    									statis.save();
-    									
-    								}else{
-    									Statistics.updateOne({month:tdy},{$inc:{'rent':rentrec}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    									
-    								}
-    												
-    				   }else{console.log(err)}
+			Statistics.updateOne({month:month},{$inc:{'rent': rentrec}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
+ 				Bike.updateOne({registerno:req.body.registerno},{rent:"false"},function(err,foundbike){
+    	 			if(foundbike){ res.redirect("/rent");}
+    				});
+    	// 	 }	
+		}
+	});
+					// 
+    	// 					}});			
+
+    	//
     	
     	});
-
-				if(req.body.return=="false"){
-				Bike.updateOne({registerno:req.body.registerno},{rent:"false"},function(err,foundbike){
-    				if(foundbike){ res.redirect("/rent");}});}
-	}
-});
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    		
 // ===========================================================Post Request========================================================//
 
 app.post("/addbike",function(req,res){
@@ -1097,11 +1039,18 @@ var rec=req.body.recieve;
 var purchase=0;
 var today= new Date(req.body.bdate);
  var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
-var acc=(1+ today.getMonth());
+var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+
+var acc=new  Date(month.getFullYear() + "/" +(1+month.getMonth())) ;
 if(!req.body.rc){rc="false"}
 if(!req.body.recieve){rec="false"}
- const bike = new Bike({
+
+Statistics.find({date:{$gt:today}},function(err,stRec){
+if(stRec=="" || stRec==[]){
+	res.render("addbike",{er:"Add Capital",user:req.user.username});
+}
+else{
+const bike = new Bike({
 	bname :req.body.bname,
 	model : req.body.model,
 	chasisno : req.body.chasisno,
@@ -1117,35 +1066,21 @@ if(!req.body.recieve){rec="false"}
 	note: req.body.note,
 	rc: rc,
 	receive:rec,
-	purchasemonth:acc,
 	status:"Available"
   });
 
-  bike.save(function(err){
-    if (!err){
-    		Statistics.find({month:acc},function(err,stRec){
-    				if(stRec){
-    					if(stRec.length==0){
-    						statis = new Statistics({
-    								date:month,
-    								purchase:req.body.totalcost,
-    								month:acc
-    							});
-    							statis.save();
-    							}
-    							else{
-    								Statistics.updateOne({month:acc},{$inc:{purchase:req.body.totalcost}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    								}
 
-    							}
-    			
-    				});
-    	
-       res.render("addbike",{er:"Successfully Added",user:req.user.username});
-    }else{
-    		 res.render("addbike",{er:"Already Exists!",user:req.user.username});
-    }
-  });
+
+ bike.save(function(err){
+ if (!err){Statistics.updateOne({month:month},{$inc:{purchase:req.body.totalcost}},function(err,res){
+ 	if(err){console.log(err)}});
+ 	res.render("addbike",{er:"Successfully Added",user:req.user.username});
+}else{res.render("addbike",{er:"Already Exists!",user:req.user.username});}
+});
+
+
+}
+});
 });
 
 
@@ -1157,14 +1092,9 @@ const bike = new Bike();
 var rc=req.body.rc;
 var rec=req.body.receive;
 var purchase=req.body.totalcost-req.body.oldcost;
-var today=  new Date(req.body.bdate);
- var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
-var acc=(1+ today.getMonth());
-if(!req.body.rc){rc="false"}
+var today=new Date();
 if(!req.body.receive){rec="false"}
-
-		Bike.updateOne({registerno:req.body.registerno},{
+	Bike.updateOne({registerno:req.body.registerno},{
 	seller: req.body.seller,
 	pamount: req.body.pamount,
 	jobcard: req.body.jobcard,
@@ -1178,29 +1108,15 @@ if(!req.body.receive){rec="false"}
 	status:"Available"
   },function(err,result){
   		if(result){
-    		Statistics.find({month:acc},function(err,stRec){
-    				if(stRec){
-    					if(stRec.length==0){
-    						statis = new Statistics({
-    								date:month,
-    								purchase:req.body.totalcost,
-    								month:acc
-    							});
-    							statis.save();
-    							}
-    							else{
-    								Statistics.updateOne({month:acc},{$inc:{purchase:purchase}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    								}
-
-    							}
-    			
-    				});
-    	
-  			res.redirect("bikes")}
-  			else{
-  				console.log(err);
-  			}
-  })
+  				 expinc=new Extra({
+					date:today,
+					description:"JobCard " + req.body.registerno,
+					debit:req.body.jobcard
+					});
+  				 expinc.save();
+  			res.redirect("/bikes");
+  		}
+  	});
 });
 
 
@@ -1220,44 +1136,18 @@ if(!req.body.receive){rec="false"}
 
 
 app.post("/capital",function(req,res){
-	var oldcapital=req.body.oldc;
-	var withdraw=req.body.amount;
-	var newcapital=oldcapital-withdraw;
-	var date=new Date(req.body.date);
-	console.log(date);
-var month= date.getFullYear() + "-"+ (2+ date.getMonth()) + "-" + 1;
-var lass=(1+  date.getMonth());
-var acc=(2+  date.getMonth());
-Statistics.updateOne({month:lass},{status:"true"},function(err,stRecd){
-   if(stRecd){
-Statistics.find({month:acc},function(err,stRec){
-    				if(stRec){
-    					if(stRec.length==0){
-    						statis = new Statistics({
-    								date:month,
-    								capital:newcapital,
-    								month:acc
-    							});
-    							statis.save();
-    							}
-    							else{
-    								Statistics.updateOne({month:acc},{capital:newcapital},function(err,res){if(res){console.log(res);;
+var date=new Date(req.body.date);
 
-    								}else{console.log(err);}});
-    								}
-
-    							}
-    			
+month=new Date(date.getFullYear()+"/"+(2+date.getMonth()));
+var acc=new  Date(month.getFullYear() + "/" +(month.getMonth())) ;
+var capital=req.body.capitala;
+statis = new Statistics({
+    				date:month,
+    				capital:capital,
+    				month:acc
     				});
-
-}});
-
-	// const amot= new Capital({
-	// 	date : Date.now(),
-	// 	balance:req.body.amount
-	// });
-	// amot.save();
-res.redirect("/accounts");
+    		statis.save();
+    		res.redirect("/");
 });
 
 
@@ -1274,104 +1164,76 @@ res.redirect("/accounts");
 
 app.post("/sale",function(req,res){
 	var rc=req.body.rc;
-	var clearmonth=0;
+	var clearmonth=new Date(null);
 	var sales=0;
 var today=  new Date(req.body.sdate);
-
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
-var acc=(1+ today.getMonth());
+var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+var acc=new Date();
 var del=req.body.delivered;
 if(req.body.amoutdue=="0"){clearmonth=acc}
 	
 if(!req.body.rc){rc="false"}
 if(!req.body.delivered){del="false"}
+
+
+
 Bike.findOne({registerno:req.body.regrno},function(err,foundbike){
-	if(foundbike){
-				Bike.updateOne({registerno:req.body.regrno},{status:'Sold'},function(err,result){
-					if(result.nModified===1){
-						
-			const sell= new Buyer({
-				name :req.body.name,
-				add : req.body.addr,
-				contact : req.body.contact,
-				sdate : req.body.sdate,
-				samount: req.body.samout,
-				transamount:req.body.tansamout,
-				paid :req.body.cpaid,
-				due : req.body.amoutdue,
-				snote :req.body.snote,
-				bike: foundbike,
-				rc:rc,
-				delivery:del,
-				guarantee:req.body.guarantee,
-				clearmonth: clearmonth,
-				salemonth:acc
-			
-			});
-			sell.save(function(err){
-    		if (!err){
+if(foundbike){
+			Bike.updateOne({registerno:req.body.regrno},{status:'Sold'},function(err,result){
+ 					if(result.nModified===1){
+ 								const sell= new Buyer({
+ 								registerno:req.body.regrno,
+								name :req.body.name,
+								add : req.body.addr,
+								contact : req.body.contact,
+								sdate : req.body.sdate,
+								samount: req.body.samout,
+								transamount:req.body.tansamout,
+								paid :req.body.cpaid,
+								due : req.body.amoutdue,
+								snote :req.body.snote,
+								bike: foundbike,
+								rc:rc,
+								delivery:del,
+								guarantee:req.body.guarantee,
+								clearmonth: clearmonth
+								});
+ 								sell.save(function(err){
+											if (!err){
+												Statistics.updateOne({month:month},{$inc:{'sales':req.body.cpaid}},function(err,res){if(err){console.log(err)}});
+													Buyer.findOne({'bike.registerno':req.body.regrno},function(err,reC){
+														 res.redirect("/update/"+ reC._id);
+													});
+											}
+										});
 
-    						Statistics.find({month:acc},function(err,stRec){
-    							if(stRec){
-    									if(stRec.length==0){
-    										statis = new Statistics({
-    										date:month,
-    										sales:req.body.cpaid,
-    										month:acc
-    									});
-    									statis.save();
-    									}
-    									else{
-    									Statistics.updateOne({month:acc},{$inc:{'sales':req.body.cpaid}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    								}
-
-    							}
-    			
-    				});
-    	
-    				Buyer.findOne({'bike.registerno':req.body.regrno},function(err,reC){
-    					 res.redirect("/update/"+ reC._id);
-    				})
-
-    				
-    			}else{
-    			console.log(err);
-    			}
-  			});
-					}else{
-						console.log(err);
-					}
-				});
-
-	}else{
-						console.log(err);
-					}
-
-});
-
-    	
+ 					}
+ 				});
+}
+}); 	
 });
 
 // ===========================================================Post Request========================================================/
 
 app.post("/update",function(req,res){
-
+console.log(req.body.register);
 var rc=req.body.rc;
 var del=req.body.delivered;
-var accmonth=req.body.clearmonth;
-var today= new Date();
+var acc=new Date(req.body.clearmonth);
+var today= new Date(req.body.duedate);
  var tdy=(1+ today.getMonth());
- var ddate= new Date(req.body.duedate);
- var duedate=(1+ ddate.getMonth());
+ var bdate= new Date(req.body.buying);
+ var duedate= new Date(req.body.duedate);
  var sales=req.body.cpaid-req.body.oldrec;
  var sm=new Date(req.body.buying);
  sd=(1+ sm.getMonth());
 var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
 var acc=(1+ today.getMonth());
-if(req.body.amoutdue==0 && req.body.clearmonth==0){if(req.body.buying!=req.body.duedate){accmonth=duedate;}else{accmonth=tdy;}}
+if(req.body.amoutdue==0 && req.body.clearmonth=="1970-01-01"){if(!req.body.duedate){today=new Date();}}
 if(!req.body.rc){rc="false"}
 if(!req.body.delivered){del="false"}
 Buyer.updateOne({_id:req.body.id},{
+
 				name :req.body.name,
 				add : req.body.addr,
 				contact : req.body.contact,
@@ -1382,60 +1244,39 @@ Buyer.updateOne({_id:req.body.id},{
 				snote :req.body.snote,
 				rc:rc,
 				delivery:del,
-				clearmonth : accmonth,
+				clearmonth : today,
 				guarantee:req.body.guarantee
 			},function(err,result){
 					if(result){
-    						Statistics.find({month:duedate},function(err,stRec){
-    							if(stRec){
-
-    								if(stRec.length==0){
-
-    									statis = new Statistics({
-    										date:month,
-    										sales:req.body.cpaid,
-    										month:acc
-    									});
-    									statis.save();
-    									
-    								}else{
-
-    									 Statistics.updateOne({month:duedate},{$inc:{'sales':sales}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    								}
-
-    							}
-    			
-    				});
-						 res.redirect("/saleList");
-					}
-					else
-					{
-						console.log(err);
-					}
-				});
-
+  				 Statistics.updateOne({month:month},{$inc:{'sales':sales}},function(err,res){if(err){console.log(err)}
+  				 	
+  				});
+												
+  			res.redirect("/saleList");
+  		}
+  	});
 });
+
 // ===========================================================Post Request========================================================/
 
-app.post("/fund/:acct",function(req,res){
-	const acc = req.params.acct;
+app.post("/fund",function(req,res){
+
+	const acc = req.body.acc;
 		var funds="";
 	var today= req.body.date;
 		if(today===""){
 			today=new Date();
 		}
 Fund.find({description:req.body.desc},function(err,recordeFound){
-	if(recordeFound){
-
-			if(!recordeFound.length==0){
+if(recordeFound){
+	if(!recordeFound.length==0){
 		if(acc === 'credit'){
-			Fund.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});}
-			else{Fund.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});
-		}
-
-
- 	}else{
-			if(acc === "credit"){
+ 		Fund.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(!err){res.redirect("/"); }});}
+ 		else{Fund.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(!err){res.redirect("/");}});}
+}
+	
+else{
+		if(acc === "credit"){
 				 funds=new Fund({
 					date:today,
 					description:req.body.desc,
@@ -1453,14 +1294,60 @@ Fund.find({description:req.body.desc},function(err,recordeFound){
 		}
 			funds.save(function(err){
     		if (!err){
-       			 res.redirect("/statis");
+       			 res.redirect("/");
     			}else{
     			console.log(err);
     			}
   			});
-	}
+
+}
 }
 });
+
+
+
+//Fund.find({description:req.body.desc},function(err,recordeFound){
+//	if(recordeFound){
+
+
+
+
+
+
+// 			if(!recordeFound.length==0){
+// 		if(acc === 'credit'){
+// 			Fund.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});}
+// 			else{Fund.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});
+// 		}
+
+
+//  	}else{
+// 			if(acc === "credit"){
+// 				 funds=new Fund({
+// 					date:today,
+// 					description:req.body.desc,
+// 					credit:req.body.amt
+// 					});
+// 			}
+// 		else{
+// 				 funds=new Fund({
+// 					date:Date.now(),
+// 					description:req.body.desc,
+// 					debit:req.body.amt
+// 					});
+				
+				
+// 		}
+// 			funds.save(function(err){
+//     		if (!err){
+//        			 res.redirect("/statis");
+//     			}else{
+//     			console.log(err);
+//     			}
+//   			});
+// 	}
+// }
+
 
 });
 // ===========================================================Post Request========================================================/
@@ -1770,18 +1657,14 @@ if(!amt=="" && !retrn==""){
 
 
  app.post("/search/statis",function(req,res){
-
-var month=new Date();
-		if(req.body.month){ month= new Date(req.body.month);}
-		console.log(month);
-month.setDate(month.getDate()-1);
+var date=new Date(req.body.month);
+month=new Date(date.getFullYear()+"/"+(2+date.getMonth()));
 var today= new Date();
-  var tdy=(1+ today.getMonth());
-
-Statistics.findOne({month:tdy},function(err,stRec){
+console.log(month);
+Statistics.findOne({date:{$gt:today}},function(err,stRec){
     		if(stRec){
   Statistics.findOne({date:month},function(err,Rec){
-   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec});}else{res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});}});						
+   if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec,user:req.user.username});}else{res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});}});						
 					}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
 				});
 

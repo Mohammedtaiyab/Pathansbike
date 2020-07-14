@@ -11,21 +11,8 @@
                 <div class="card-header card-header-tabs card-header-primary">
                   <div class="nav-tabs-navigation">
                     <div class="nav-tabs-wrapper">
-                      <span class="nav-tabs-title">Account</span>
-                      <ul class="nav nav-tabs" data-tabs="tabs">
-                        <li class="nav-item">
-                          <a class="nav-link active" href="#income" data-toggle="tab">
-                            <i class="material-icons">add</i>Income
-                            <div class="ripple-container"></div>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#expense" data-toggle="tab">
-                            <i class="material-icons">remove</i>Expenses
-                            <div class="ripple-container"></div>
-                          </a>
-                        </li>
-                      </ul>
+                      <span class="nav-tabs-title">Balance</span>
+                      
                     </div>
                   </div>
                 </div>
@@ -38,21 +25,10 @@
                       <th>Discription</th>
                       <th>Amount</th>
                         <tbody>
-                        <tr>
-                        <td>1</td>
-                         <td><%= today %> </td>
-                        <td>Sales</td>
-                        <td><%= sales %></td>
-                        </tr>
-                         <tr>
-                        <td>2</td>
-                         <td><%= today %> </td>
-                        <td>Income</td>
-                        <td><%= income %></td>
-                        </tr>
-                        <% var i=2; %>
-<% acc.forEach(function(fund){ %>
-         <%   if(fund.credit > 0 ){  i++; %>
+                        
+                        <% var i=0; %>
+<% acc.forEach(function(fund){i++; %>
+         <%   if(fund.credit > 0 ){   %>
                         
                         <tr>
                         <td><%= i %></td>
@@ -60,14 +36,26 @@
                       <%= d + "/" + m +"/"+y%></td>
                         <td><%= fund.description %></td>
                        
-                        <td><%= fund.credit %></td>
+                        <td>+<%= fund.credit %></td>
                         </tr>
           <%   }%>
+             <%   if(fund.debit >  0){%>
+                        <tr>
+                        <td><%= i %></td>
+                         <td>
+                           <% var d= fund.date.getDate(); m=1+fund.date.getMonth();y=fund.date.getYear()%100 %>
+                      <%= d + "/" + m +"/"+y%>
+                          </td>
+                        <td><%= fund.description %></td>
+                       
+                        <td>-<%= fund.debit %></td>
+                        </tr>
+          <%  }%>
 
 <%})%>
                         </tbody>
                       </table>
-                      <form action="/fund/credit" method="post">
+                      <form action="/fund" method="post">
                           <div class="row">
                           <div class="col-md-2">
                                     <div class="form-group">
@@ -75,7 +63,16 @@
                                           
                                      </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                      
+                                          <select class="form-control" name="acc" >
+                                          <option class="bmd-label-floating mylabel" value="credit">Deposite</option>
+                                          <option class="bmd-label-floating mylabel" value="Debit">Withdraw</option>
+                                          </select>
+                                     </div>
+                                </div>
+                                  <div class="col-md-3">
                                     <div class="form-group">
                                           <input type="text" name="desc" placeholder="Discription" class="form-control">
                                      </div>
@@ -87,87 +84,14 @@
                               </div>
                             <div class="col-md-2">
                                   <div class="form-group">
-                                        <button type="submit" class="btn btn-primary pull-right">+</button>
+                                        <button type="submit" class="btn btn-primary pull-right">Save</button>
                                   </div>
                               </div>
                     </div>
                     </form>
                       </div>
 
-                    <div class="tab-pane" id="expense">
-                      <table class="table">
-                        <th>Sno</th>
-                      <th>Date</th>
-                      <th>Discription</th>
-                      <th>Amount</th>
-                        <tbody>
-                           <tr>
-                        <td>1</td>
-                         <td><%= today %> </td>
-                        <td>Purchase</td>
-                       
-                        <td><%= purchase %></td>
-                        </tr>
-                         <tr>
-                        <td>2</td>
-                         <td><%= today %> </td>
-                        <td>Expenses</td>
-                        <td><%= expenses %></td>
-                        </tr>
-                        <% var i=2;%>
-<% acc.forEach(function(fund){  %>
-         <%   if(fund.debit >  0){ i++;%>
-                        <tr>
-                        <td><%= i %></td>
-                         <td>
-                           <% var d= fund.date.getDate(); m=1+fund.date.getMonth();y=fund.date.getYear()%100 %>
-                      <%= d + "/" + m +"/"+y%>
-                          </td>
-                        <td><%= fund.description %></td>
-                       
-                        <td><%= fund.debit %></td>
-                        </tr>
-          <%  }%>
-
-<%})%>
-
-
-
-
-
-
-                        </tbody>
-                      </table>
-                          <form action="/fund/debit" method="post">
-                          <div class="row">
-                           <div class="col-md-2">
-                                    <div class="form-group">
-                                    <input type="date" class="form-control" name="date" value="<%= new Date(); %>">
-                                          
-                                     </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="form-group">
-                                  
-                                          <input type="text" name="desc" placeholder="Discription"  class="form-control">
-                                     </div>
-                                </div>
-                              <div class="col-md-3">
-                                  <div class="form-group">
-                                        <input type="text" name="amt" placeholder="Amount"  class="form-control">
-                                  </div>
-                              </div>
-                            <div class="col-md-2">
-                                  <div class="form-group">
-                                        <button type="submit" class="btn btn-primary pull-right">-</button>
-                                  </div>
-                              </div>
-                    </div>
-                    </form>
-                    </div>
-                  </div>
-                </div>
-
+                 
 
 
 

@@ -28,7 +28,7 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label class="bmd-label-floating">Reg.No</label>
-                          <input type="text" value="<%= registerno %>" id="regs"  class="form-control" disabled>
+                          <input type="text" value="<%= registerno %>" id="regs" name="register" class="form-control">
                             <input type="hidden" name = "id" value="<%= buyer._id %>">
                         </div>
                       </div>
@@ -84,7 +84,7 @@
                          <div class="col-md-2">
                         <div class="form-group">
                           <label class="bmd-label-floating">Date</label>
-<% var d= ('0' +buyer.sdate.getDate()).slice(-2); m=('0' +(buyer.sdate.getMonth()+1)).slice(-2);y=buyer.sdate.getFullYear() %>
+<% var sdate=new Date(), d= ('0' +sdate.getDate()).slice(-2); m=('0' +(sdate.getMonth()+1)).slice(-2);y=sdate.getFullYear() %>
             <input type="date"  name ="duedate"  id="sdate" class="form-control"value="<%=y + "-" + m +"-"+d%>">
             <input type="hidden" name="buying" value="<%= buyer.sdate %>" >
                         </div>
@@ -103,11 +103,11 @@
                           
                         </div>
                       </div>
-                            <div class="col-md-2">
+                            <div class="col-sm-2">
                         <div class="form-group"><% var j="unchecked";%>
                            <% if(buyer.delivery === true){j="checked"} %>
                            <input class="mycheck" name="delivered" type="Checkbox" id="recieve" value="true" <%= j %>>
-                          <label class="bmd-label-floating mylabel">Bike Delivered</label>
+                          <label class="bmd-label-floating mylabel">Delivered</label>
                         </div>
                       </div>
                          
