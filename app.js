@@ -1090,7 +1090,7 @@ app.post("/capital",function(req,res){
 var date=new Date(req.body.date);
 var month=new Date(date.getFullYear() + "/" +(1+date.getMonth()));
 var acc=new Date(month);
-acc.setDate(acc.getDate()+1);
+acc.setDate(acc.getMonth()-1);
 
 var capital=req.body.capitala;
 console.log(month);
