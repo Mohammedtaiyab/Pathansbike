@@ -415,6 +415,8 @@ app.get("/accounts",function(req,res){if (req.isAuthenticated()){
 	var debit=0;
  var today= new Date();
 var month = new Date(today);
+var last = new Date(month);
+last.setMonth(month.getMonth()-1);
 var tdy=(1+ today.getMonth());
  Statistics.findOne({month:tdy},function(err, capRecordes){
  	if(capRecordes){
@@ -695,7 +697,9 @@ var purchase = 0;
 	var expdebit=0;
  var today= new Date();
   var tdy=(1+ today.getMonth());
-var month= today.getFullYear() + "-"+ ( today.getMonth()) + "-" + 31;
+var month= today.getFullYear() + "-"+ ( today.getMonth()) + "-" + 1;
+var last = new Date(month);
+last.setMonth(month.getMonth()-1);
 
 							Account.find({date:{$gte:month}},function(err,expinc){
    									if(expinc){
@@ -716,7 +720,7 @@ var month= today.getFullYear() + "-"+ ( today.getMonth()) + "-" + 31;
     									statis.save();
     									}
     									else{
-    											Statistics.updateOne({month:month},{expenses:expdebit+debit,income:inccredit+credit},function(err,res){if(!err){
+    											Statistics.updateOne({date:{$lt:month},month:{$gt:last}},{expenses:expdebit+debit,income:inccredit+credit},function(err,res){if(!err){
 
     												
 
@@ -752,7 +756,7 @@ app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 var today= new Date();
 
 
-Statistics.findOne({date:{$gt:today}},function(err,stRec){
+Statistics.findOne({date:{$lt:today}},function(err,stRec){
     		if(stRec){
     			
 			res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});
@@ -893,6 +897,9 @@ app.post("/rent",function(req,res){
 var accmonth=0;
 var today= new Date(req.body.hdate);
 var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+month.setDate(1);
+var last = new Date(month);
+last.setMonth(month.getMonth()-1);
 var betwmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
 var tdy=(1+ today.getMonth());
 if(req.body.due==0){accmonth=tdy}
@@ -918,7 +925,7 @@ bikerent =new Rent({
 bikerent.save(function(err){
 	if(!err){			
 
-Statistics.updateOne({month:month},{$inc:{'rent':req.body.receive}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
+Statistics.updateOne({date:{$lg:month},month:{$gt:last}},{$inc:{'rent':req.body.receive}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
     									
 
     	Bike.updateOne({registerno:req.body.registerno},{rent:"true"},function(err,foundbike){
@@ -947,6 +954,9 @@ app.post("/updaterent",function(req,res){
 		var ret=req.body.return;
 		var today= new Date();
 		var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+		month.setDate(1);
+		var last = new Date(month);
+		last.setMonth(month.getMonth()-1);
  		var tdy=(1+ today.getMonth());
  		var due=req.body.due;
  		var rentrec=req.body.receive-req.body.oldrec;
@@ -968,7 +978,7 @@ if(!req.body.return){ret="true"}
 
 	},function(err,rentdata){
 		if(rentdata){
-			Statistics.updateOne({month:month},{$inc:{'rent': rentrec}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
+			Statistics.updateOne({date:{$lt:month},month:{$lt:last}},{$inc:{'rent': rentrec}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
  				Bike.updateOne({registerno:req.body.registerno},{rent:"false"},function(err,foundbike){
     	 			if(foundbike){ res.redirect("/rent");}
     				});
