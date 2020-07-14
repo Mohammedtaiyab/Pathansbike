@@ -304,6 +304,13 @@ input[type=text]:placeholder {
 <!------ Include the above in your HEAD tag ---------->
 
 <div class="wrapper fadeInDown">
+   <% if(err!=""){ %>
+  <div class="alert alert-warning">
+                   
+                    <span>
+                      <%= err %> </span>
+  </div>
+<%}%>
   <div id="formContent">
     <!-- Tabs Titles -->
 

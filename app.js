@@ -219,7 +219,7 @@ const Task = mongoose.model("Task",taskSchema);
 // ===========================================================Schemas========================================================//
 
 app.get("/login", function(req, res){
-  res.render("login");
+  res.render("login",{err:""});
 });
 
 
@@ -242,25 +242,20 @@ app.post("/register", function(req, res){
 
 });
 
+app.post('/login',
+  passport.authenticate('local', { failWithError: true }),
+  function(req, res, next) {
+    // handle success
+    if (req.xhr) { return res.json({ id: req.user.id }); }
+    return res.redirect('/');
+  },
+  function(err, req, res, next) {
+    // handle error
+    if (req.xhr) { return res.json(err); }
+    return res.render("login",{err:"Invalid username or Password"});
+  }
+);
 
-app.post("/login", function(req, res){
-
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password
-  });
-
-  req.login(user, function(err){
-    if (err) {
-      console.log(err);
-    } else {
-      passport.authenticate("local")(req, res, function(){
-        res.redirect("/");
-      });
-    }
-  });
-
-});
 app.get("/logout", function(req, res){
   req.logout();
   res.redirect("/login");
@@ -276,17 +271,16 @@ app.get("/", function(req, res){if (req.isAuthenticated()){
 	var expdebit=0;
 	var capital =0;
  var today= new Date();
-month= new Date(today);
+month= new Date(today.getFullYear()+"/"+ (1+today.getMonth()));
 var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
-Statistics.findOne({month:last,date:{$gt:today}}, function(err, capRecordes){
+Statistics.findOne({month:month}, function(err, capRecordes){
 			if(!capRecordes){
-				month1=month.getFullYear() + "-"+ ((month.getMonth()+1));
+				month1=month.getFullYear() + "-"+ ((month.getMonth()));
 				month=new Date(month1);
 				last = new Date(month.getFullYear() + "/" + (month.getMonth()));
 			}
-
-Statistics.findOne({date:month},function(err,stRec){
+Statistics.findOne({month:month},function(err,stRec){
     						if(stRec){
     							
     								capital=stRec.capital;	
@@ -789,47 +783,6 @@ res.render("edit",{acc:funds,user:req.user.username});
   	res.render("edit",{acc:[],user:req.user.username});
     }
 });
-// Statistics.findOne({month:tdy}, function(err, capRecordes){
-// 			if(!capRecordes){
-// 				month=today.getFullYear() + "-"+ (today.getMonth()-1) + "-" + 31;
-// 				tdy=tdy-1;
-// 			}
-
-
-
-// 							Statistics.findOne({month:tdy},function(err,stRec){
-//     						if(stRec){
-    								
-//     								capital=stRec.capital;	
-//     							capital=(capital-stRec.purchase - stRec.expenses);
-//     									balance=capital+stRec.income+stRec.rent+ stRec.sales;
-//     								Fund.find({date:{$gt:month}},function(err,funds){
-//   													if(funds){
-//   																funds.forEach(function(fund){
-//    																credit=credit+fund.credit;
-//    																debit=debit+fund.debit;})
-//    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
-
-//    												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
-//    											}})
-  										
-
-//   													}});
-//     						}else{});
-
-
-
-
-
-
-
-
-
-//   //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
-  
-
-// });
-
 } else {
     res.redirect("/login");
   }
@@ -1138,16 +1091,23 @@ var date=new Date(req.body.date);
 month=new Date(date.getFullYear()+"/"+(2+date.getMonth()));
 var acc=new  Date(month.getFullYear() + "/" +(month.getMonth())) ;
 var capital=req.body.capitala;
-statis = new Statistics({
+Statistics.findOne({date:month},function(err,rst){
+	if(rst){
+			Statistics.updateOne({date:month},{$inc:{'capital':capital}},function(err,rss){if(!err){res.redirect("/");}});
+	}else{
+		statis = new Statistics({
     				date:month,
     				capital:capital,
     				month:acc
     				});
     		statis.save();
     		res.redirect("/");
+
+
+	}
 });
 
-
+});
 
 
 // ===========================================================Post Request========================================================/
