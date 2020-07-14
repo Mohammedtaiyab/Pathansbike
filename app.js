@@ -286,10 +286,7 @@ Statistics.findOne({month:last,date:{$gt:today}}, function(err, capRecordes){
 				last = new Date(month.getFullYear() + "/" + (month.getMonth()));
 			}
 
-// 	console.log(month);
-// console.log(last);
-  
-Statistics.findOne({month:last,date:{$gt:today}},function(err,stRec){
+Statistics.findOne({date:month},function(err,stRec){
     						if(stRec){
     							
     								capital=stRec.capital;	
