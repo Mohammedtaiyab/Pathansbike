@@ -272,14 +272,16 @@ app.get("/", function(req, res){if (req.isAuthenticated()){
 	var capital =0;
  var today= new Date();
 month= new Date();
-var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
+var last = new Date(month);
+last.setMonth(month.getMonth()-1);
  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
-Statistics.findOne({date:{$lt:month}}, function(err, capRecordes){
+Statistics.findOne({date:{$lt:month},month:{$gt:last}}, function(err, capRecordes){
 			if(!capRecordes){
 				month.setMonth(month.getMonth()-1);
+				last.setMonth(month.getMonth()-1);
 			}
 	
-Statistics.findOne({date:{$lt:month}},function(err,stRec){
+Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,stRec){
     						if(stRec){
     							
     								capital=stRec.capital;	
