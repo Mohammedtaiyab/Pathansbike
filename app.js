@@ -1088,18 +1088,21 @@ if(!req.body.receive){rec="false"}
 
 app.post("/capital",function(req,res){
 var date=new Date(req.body.date);
-var month=new Date(date.getFullYear() + "/" +(2+date.getMonth()))
-var acc=new  Date(date.getFullYear() + "/" +(1+date.getMonth())) ;
+var month=new Date(date.getFullYear() + "/" +(1+date.getMonth()));
+var acc=new Date(month);
+acc.setDate(acc.getDate()+1);
 
 var capital=req.body.capitala;
-Statistics.findOne({date:date},function(err,rst){
+console.log(month);
+console.log(acc);
+ Statistics.findOne({date:date},function(err,rst){
 	if(rst){
 			Statistics.updateOne({date:month},{$inc:{'capital':capital}},function(err,rss){if(!err){res.redirect("/");}});
 	}else{
 		statis = new Statistics({
-    				date:month,
+    				date:acc,
     				capital:capital,
-    				month:acc
+    				month:month
     				});
     		statis.save();
     		res.redirect("/");
