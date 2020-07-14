@@ -274,6 +274,7 @@ app.get("/", function(req, res){if (req.isAuthenticated()){
 month= new Date(today.getFullYear()+"/"+ (1+today.getMonth()));
 var last = new Date(month.getFullYear() + "/" + (1+month.getMonth()));
  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
+
 Statistics.findOne({month:month}, function(err, capRecordes){
 			if(!capRecordes){
 				month1=month.getFullYear() + "-"+ ((month.getMonth()));
@@ -1087,11 +1088,11 @@ if(!req.body.receive){rec="false"}
 
 app.post("/capital",function(req,res){
 var date=new Date(req.body.date);
+var month=new Date(date.getFullYear() + "/" +(2+date.getMonth()))
+var acc=new  Date(date.getFullYear() + "/" +(1+date.getMonth())) ;
 
-month=new Date(date.getFullYear()+"/"+(2+date.getMonth()));
-var acc=new  Date(month.getFullYear() + "/" +(month.getMonth())) ;
 var capital=req.body.capitala;
-Statistics.findOne({date:month},function(err,rst){
+Statistics.findOne({date:date},function(err,rst){
 	if(rst){
 			Statistics.updateOne({date:month},{$inc:{'capital':capital}},function(err,rss){if(!err){res.redirect("/");}});
 	}else{
