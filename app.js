@@ -1000,14 +1000,19 @@ var rec=req.body.recieve;
 var purchase=0;
 var today= new Date(req.body.bdate);
  var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
-var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
-
+var month= new Date(req.body.bdate);
+month.setDate(1);
+var last = new Date(month);
+last.setDate(month.getDate()-1);
+console.log(month);
+console.log(last);
 var acc=new  Date(month.getFullYear() + "/" +(1+month.getMonth())) ;
 if(!req.body.rc){rc="false"}
 if(!req.body.recieve){rec="false"}
 
-Statistics.find({date:{$gt:today}},function(err,stRec){
+Statistics.find({date:month,month:last},function(err,stRec){
 if(stRec=="" || stRec==[]){
+		console.log(stRec);	
 	res.render("addbike",{er:"Add Capital",user:req.user.username});
 }
 else{
@@ -1033,7 +1038,7 @@ const bike = new Bike({
 
 
  bike.save(function(err){
- if (!err){Statistics.updateOne({month:month},{$inc:{purchase:req.body.totalcost}},function(err,res){
+ if (!err){Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,res){
  	if(err){console.log(err)}});
  	res.render("addbike",{er:"Successfully Added",user:req.user.username});
 }else{res.render("addbike",{er:"Already Exists!",user:req.user.username});}
