@@ -689,60 +689,7 @@ app.get("/updaterent/:id",function(req,res){if (req.isAuthenticated()){
 
 // ===========================================================Get Request========================================================//
 
-app.get("/statis",function(req,res){if (req.isAuthenticated()){
-var purchase = 0;
-	var credit=0;
-	var debit=0;
-	var inccredit=0;
-	var expdebit=0;
- var today= new Date();
-  var tdy=(1+ today.getMonth());
-var month= today.getFullYear() + "-"+ ( today.getMonth()) + "-" + 1;
-var last = new Date(month);
-last.setMonth(month.getMonth()-1);
-
-							Account.find({date:{$gte:month}},function(err,expinc){
-   									if(expinc){
-   								expinc.forEach(function(acc){
-   										inccredit=inccredit+acc.credit;
-   										expdebit=expdebit+acc.debit;})
-   								
-   											Statistics.find({month:month},function(err,stRec){
-    							if(stRec){
-    								
-    									if(stRec.length==0){
-    										statis = new Statistics({
-    										date:month,
-    									expenses:expdebit+debit,
-    									income:inccredit+credit,
-    										month:tdy
-    									});
-    									statis.save();
-    									}
-    									else{
-    											Statistics.updateOne({date:{$lt:month},month:{$gt:last}},{expenses:expdebit+debit,income:inccredit+credit},function(err,res){if(!err){
-
-    												
-
-    											}else{console.log(err);}});
-    									
-    									}
-
-    							}
-    								else{console.log("No Data")}
-    						});
-
-
-
-   															}
-   														});
-   															
-   													
-	res.redirect("/expenditure");
-
-} else {
-    res.redirect("/login");
-  }
+app.get("/statis",function(req,res){
 
 
 });
@@ -754,13 +701,16 @@ last.setMonth(month.getMonth()-1);
 app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 
 var today= new Date();
-
-
-Statistics.findOne({date:{$lt:today}},function(err,stRec){
+var month=new Date(today);
+month.setMonth(today.getMonth()-1);
+var last=new Date(month);
+last.setMonth(month.getMonth-1);
+Statistics.findOne({date:{$lt:today},month:{$gt:month}},function(err,stRec){
     		if(stRec){
-    			
+    			//Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,oldrec){
+    			//	if(oldrec){
 			res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});
-														
+										//	}});			
 						}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
 					});
 } else {
@@ -896,10 +846,11 @@ res.render("accounts",{salesRecordes:salesRecordes,dailyex:debit,dailyin:credit,
 app.post("/rent",function(req,res){
 var accmonth=0;
 var today= new Date(req.body.hdate);
-var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+var month= new Date(req.body.hdate);
 month.setDate(1);
 var last = new Date(month);
-last.setMonth(month.getMonth()-1);
+last.setDate(month.getDate()-1);
+console.log(month);
 var betwmonth= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 31;
 var tdy=(1+ today.getMonth());
 if(req.body.due==0){accmonth=tdy}
@@ -925,9 +876,7 @@ bikerent =new Rent({
 bikerent.save(function(err){
 	if(!err){			
 
-Statistics.updateOne({date:{$lg:month},month:{$gt:last}},{$inc:{'rent':req.body.receive}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
-    									
-
+Statistics.updateOne({date:month,month:last},{$inc:{'rent':req.body.receive}},function(err,res){if(err){console.log(err);}});
     	Bike.updateOne({registerno:req.body.registerno},{rent:"true"},function(err,foundbike){
     				if(foundbike){ res.redirect("/rent");}
     				});
@@ -956,13 +905,13 @@ app.post("/updaterent",function(req,res){
 		var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
 		month.setDate(1);
 		var last = new Date(month);
-		last.setMonth(month.getMonth()-1);
+		last.setDate(month.getDate()-1);
  		var tdy=(1+ today.getMonth());
  		var due=req.body.due;
  		var rentrec=req.body.receive-req.body.oldrec;
 if(!req.body.due){due=0;}
 if(due===0){accmonth=tdy;}
-if(req.body.rdate){today=new Date(req.body.rdate),month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));}
+if(req.body.rdate){today=new Date(req.body.rdate),month=new Date(today),last.setDate(month.getDate()-1);}
 if(!req.body.return){ret="true"}
 	Rent.updateOne({_id:req.body.id},{
 			name:req.body.name,
@@ -978,7 +927,7 @@ if(!req.body.return){ret="true"}
 
 	},function(err,rentdata){
 		if(rentdata){
-			Statistics.updateOne({date:{$lt:month},month:{$lt:last}},{$inc:{'rent': rentrec}},function(err,res){if(!err){console.log(res);}else{console.log(err);}});
+			Statistics.updateOne({date:{$lt:month},month:{$gt:last}},{$inc:{'rent': rentrec}},function(err,res){if(err){console.log(err);}});
  				Bike.updateOne({registerno:req.body.registerno},{rent:"false"},function(err,foundbike){
     	 			if(foundbike){ res.redirect("/rent");}
     				});
@@ -1004,8 +953,6 @@ var month= new Date(req.body.bdate);
 month.setDate(1);
 var last = new Date(month);
 last.setDate(month.getDate()-1);
-console.log(month);
-console.log(last);
 var acc=new  Date(month.getFullYear() + "/" +(1+month.getMonth())) ;
 if(!req.body.rc){rc="false"}
 if(!req.body.recieve){rec="false"}
@@ -1150,7 +1097,10 @@ app.post("/sale",function(req,res){
 	var clearmonth=new Date(null);
 	var sales=0;
 var today=  new Date(req.body.sdate);
-var month= new Date(today.getFullYear() + "-"+(1+today.getMonth()));
+var month= new Date(req.body.sdate);
+month.setDate(1);
+var last = new Date(month);
+last.setDate(month.getDate()-1);
 var acc=new Date();
 var del=req.body.delivered;
 if(req.body.amoutdue=="0"){clearmonth=acc}
@@ -1183,7 +1133,7 @@ if(foundbike){
 								});
  								sell.save(function(err){
 											if (!err){
-												Statistics.updateOne({month:month},{$inc:{'sales':req.body.cpaid}},function(err,res){if(err){console.log(err)}});
+												Statistics.updateOne({date:month,month:last},{$inc:{'sales':req.body.cpaid}},function(err,res){if(err){console.log(err)}});
 													Buyer.findOne({'bike.registerno':req.body.regrno},function(err,reC){
 														 res.redirect("/update/"+ reC._id);
 													});
@@ -1210,7 +1160,10 @@ var today= new Date(req.body.duedate);
  var sales=req.body.cpaid-req.body.oldrec;
  var sm=new Date(req.body.buying);
  sd=(1+ sm.getMonth());
-var month= today.getFullYear() + "-"+ (1+ today.getMonth()) + "-" + 1;
+var month= new Date(today);
+month.setDate(1);
+var last = new Date(month);
+last.setDate(month.getDate()-1);
 var acc=(1+ today.getMonth());
 if(req.body.amoutdue==0 && req.body.clearmonth=="1970-01-01"){if(!req.body.duedate){today=new Date();}}
 if(!req.body.rc){rc="false"}
@@ -1231,7 +1184,7 @@ Buyer.updateOne({_id:req.body.id},{
 				guarantee:req.body.guarantee
 			},function(err,result){
 					if(result){
-  				 Statistics.updateOne({month:month},{$inc:{'sales':sales}},function(err,res){if(err){console.log(err)}
+  				 Statistics.updateOne({date:month,month:last},{$inc:{'sales':sales}},function(err,res){if(err){console.log(err)}
   				 	
   				});
 												
@@ -1287,65 +1240,29 @@ else{
 }
 });
 
-
-
-//Fund.find({description:req.body.desc},function(err,recordeFound){
-//	if(recordeFound){
-
-
-
-
-
-
-// 			if(!recordeFound.length==0){
-// 		if(acc === 'credit'){
-// 			Fund.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});}
-// 			else{Fund.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(!err){  res.redirect("/statis");}});
-// 		}
-
-
-//  	}else{
-// 			if(acc === "credit"){
-// 				 funds=new Fund({
-// 					date:today,
-// 					description:req.body.desc,
-// 					credit:req.body.amt
-// 					});
-// 			}
-// 		else{
-// 				 funds=new Fund({
-// 					date:Date.now(),
-// 					description:req.body.desc,
-// 					debit:req.body.amt
-// 					});
-				
-				
-// 		}
-// 			funds.save(function(err){
-//     		if (!err){
-//        			 res.redirect("/statis");
-//     			}else{
-//     			console.log(err);
-//     			}
-//   			});
-// 	}
-// }
-
-
 });
 // ===========================================================Post Request========================================================/
 
 app.post("/expenditure/:acct",function(req,res){
 	const acc = req.params.acct;
 	var expinc="";
-	var today= req.body.date;
-		if(today===""){
+	var credit=0;
+	var debit=0;
+	if(acc === 'credit'){credit=req.body.amt}else{debit=req.body.amt}
+
+	var today=new Date(req.body.date);
+		var last=new Date(today);
+		last.setMonth(today.getMonth()-1);
+		if(!req.body.date){
 			today=new Date();
+			var last=new Date(today);
+			last.setMonth(today.getMonth()-1);
+
 		}
 Account.findOne({description:req.body.desc},function(err,recordeFound){
 	if(recordeFound){if(acc === 'credit'){
-			Account.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(!err){ res.redirect("/statis");}});}
-			else{Account.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(!err){ res.redirect("/statis");}});}
+			Account.updateOne({description:req.body.desc},{date:today,credit:req.body.amt},function(err){if(err){console.log(err);}});}
+			else{Account.updateOne({description:req.body.desc},{date:today,debit:req.body.amt},function(err){if(err){console.log(err);}});}
 
 	}else{
 		if(acc === 'credit'){
@@ -1365,13 +1282,17 @@ Account.findOne({description:req.body.desc},function(err,recordeFound){
 				
 		}
 			expinc.save(function(err){
-    		if (!err){
-       			 res.redirect("/statis");
-    			}else{
-    			console.log(err);
+    		if (err){
+       			 console.log(err);
     			}
   			});
 	}
+
+	Statistics.updateOne({date:{$lt:today},month:{$gt:last}},{$inc:{'expenses':debit}},{$inc:{'income':credit}},function(err,result){
+		if(!err){
+			res.redirect("/expenditure");
+		}		
+});
 
 		});
 });
@@ -1641,10 +1562,12 @@ if(!amt=="" && !retrn==""){
 
  app.post("/search/statis",function(req,res){
 var date=new Date(req.body.month);
-month=new Date(date.getFullYear()+"/"+(2+date.getMonth()));
-var today= new Date();
-console.log(month);
-Statistics.findOne({date:{$gt:today}},function(err,stRec){
+month=new Date(req.body.month);
+month.setDate(1);
+var today=new Date();
+var last=new Date(today);
+last.setMonth(today.getMonth()-1);
+Statistics.findOne({date:{$lt:today},month:{$gt:last}},function(err,stRec){
     		if(stRec){
   Statistics.findOne({date:month},function(err,Rec){
    if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec,user:req.user.username});}else{res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});}});						
