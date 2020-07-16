@@ -73,7 +73,7 @@
                 </div>
                 <div class="card-body">
                   <div id="print" class="table-responsive">
-                    <table class="table table-hover" >
+                    <table id="exl" class="table table-hover" style="font-size: small;">
                       <thead class=" text-primary">
                         <th scope="col">
                           ID
@@ -108,6 +108,7 @@
                         </th>
                         <th scope="col">RC</th>
                         <th scope="col">IN</th>
+                        <th scope="col">NOC</th>
                         <th scope="col">
                           Actions
                         </th>
@@ -162,6 +163,12 @@
                           <i class="fa fa-times" aria-hidden="true"></i>
                           <%} %>
                           </td>
+                          <td><% if(bike.noc===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          </td>
                           <td class="text-primary">
                           <% if(bike.status  == 'Available') { %>
                                        <% if(bike.rent === true) { %>
@@ -192,8 +199,23 @@
                 </div>
         </div>
          <input class="btn btn-secondary" type="button" onclick="printDiv('print')" value="print!" />
+          <button class="btn btn-secondary" onclick="ExportToExcel(exl)"> 
+       Export 
+    </button> 
       </div>
-      <script>
+     
+      <script src= 
+"//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"> 
+</script> 
+<script src= 
+"//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"> 
+</script> 
+ <script type="text/javascript">
+function ExportToExcel(exl){
+       var htmltable= document.getElementById('exl');
+       var html = htmltable.outerHTML;
+       window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
+    }
 document.getElementsByClassName('nav-item')[1].classList.add('active');
 </script>
 <%- include("footer"); -%>

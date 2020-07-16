@@ -111,6 +111,14 @@ function printDiv(divName) {
      document.body.innerHTML = originalContents;
      location.reload();
 }
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});
 </script>
 </body>
 

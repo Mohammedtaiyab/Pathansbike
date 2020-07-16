@@ -84,6 +84,7 @@ const bikeSchema ={
 	rc: { type: Boolean, default: false },
 	receive: { type: Boolean, default: false },
 	rent: { type: Boolean, default: false },
+	noc: { type: Boolean, default: false },
 	purchasemonth:Number,
 	status: String
 }
@@ -105,6 +106,7 @@ const buyerSchema={
 	snote : String,
 	rc: { type: Boolean, default: false },
 	delivery: { type: Boolean, default: false },
+	noc: { type: Boolean, default: false },
 	clearmonth:Date,
 	guarantee:String,
 	bike: bikeSchema
@@ -262,47 +264,66 @@ app.get("/logout", function(req, res){
 });
 // ===========================================================Get Request========================================================//
 app.get("/", function(req, res){if (req.isAuthenticated()){
-	var purchase = 0;
-	var balance =0;
-	var sales=0;
-	var credit=0;
-	var debit=0;
-	var inccredit=0;
-	var expdebit=0;
-	var capital =0;
- var today= new Date();
-month= new Date();
-var last = new Date(month);
-last.setMonth(month.getMonth()-1);
- var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
-Statistics.findOne({date:{$lt:month},month:{$gt:last}}, function(err, capRecordes){
-			if(!capRecordes){
-				month.setMonth(month.getMonth()-1);
-				last.setMonth(month.getMonth()-1);
-			}
-	
-Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,stRec){
-    						if(stRec){
-    							
-    								capital=stRec.capital;	
-    							capital=(capital-stRec.purchase - stRec.expenses);
-    									balance=capital+stRec.income+stRec.rent+ stRec.sales;
-    								Fund.find({date:{$lt:month,$gt:last}},function(err,funds){
-  													if(funds){
-  																funds.forEach(function(fund){
-   																credit=credit+fund.credit;
-   																debit=debit+fund.debit;})
-   															balance=(balance-debit)+credit;
-   											Task.find({date:{$lt:today}},function(err,rec){if(rec){
+var capital=0;
+var balance=0;
+var today=new Date();
+Capital.findOne({},function(err,result){
+	if(result){
+			Task.find({date:{$lt:today}},function(err,rec){if(rec){
+			res.render("dashboard",{capital:result.balance,balance:result.balance,todo:rec,user:req.user.username});
+																}
+		});
+  										
+	}else{
+		res.render("dashboard",{capital:"",balance:"",todo:[],user:req.user.username});
+	}
+});
 
-   												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
-   											}})
+
+
+
+
+// 	var purchase = 0;
+// 	var balance =0;
+// 	var sales=0;
+// 	var credit=0;
+// 	var debit=0;
+// 	var inccredit=0;
+// 	var expdebit=0;
+// 	var capital =0;
+//  var today= new Date();
+// month= new Date();
+// var last = new Date(month);
+// last.setMonth(month.getMonth()-1);
+//  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
+// Statistics.findOne({date:{$lt:month},month:{$gt:last}}, function(err, capRecordes){
+// 			if(!capRecordes){
+// 				month.setMonth(month.getMonth()-1);
+// 				last.setMonth(month.getMonth()-1);
+// 			}
+	
+// Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,stRec){
+//     						if(stRec){
+    							
+//     								capital=stRec.capital;	
+//     							capital=(capital-stRec.purchase - stRec.expenses);
+//     									balance=capital+stRec.income+stRec.rent+ stRec.sales;
+//     								Fund.find({date:{$lt:month,$gt:last}},function(err,funds){
+//   													if(funds){
+//   																funds.forEach(function(fund){
+//    																credit=credit+fund.credit;
+//    																debit=debit+fund.debit;})
+//    															balance=(balance-debit)+credit;
+//    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
+
+//    												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
+//    											}})
   										
 
-  													}});
-    						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
+//   													}});
+//     						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
 
-});
+// });
 
 //res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
 
@@ -946,6 +967,7 @@ if(!req.body.return){ret="true"}
 app.post("/addbike",function(req,res){
 var rc=req.body.rc;
 var rec=req.body.recieve;
+var noc=req.body.noc;
 var purchase=0;
 var today= new Date(req.body.bdate);
  var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
@@ -956,13 +978,7 @@ last.setDate(month.getDate()-1);
 var acc=new  Date(month.getFullYear() + "/" +(1+month.getMonth())) ;
 if(!req.body.rc){rc="false"}
 if(!req.body.recieve){rec="false"}
-
-Statistics.find({date:month,month:last},function(err,stRec){
-if(stRec=="" || stRec==[]){
-		console.log(stRec);	
-	res.render("addbike",{er:"Add Capital",user:req.user.username});
-}
-else{
+if(!req.body.noc){noc="false"}
 const bike = new Bike({
 	bname :req.body.bname,
 	model : req.body.model,
@@ -978,6 +994,7 @@ const bike = new Bike({
 	ledger:req.body.ledger,
 	note: req.body.note,
 	rc: rc,
+	noc:noc,
 	receive:rec,
 	status:"Available"
   });
@@ -985,15 +1002,43 @@ const bike = new Bike({
 
 
  bike.save(function(err){
- if (!err){Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,res){
- 	if(err){console.log(err)}});
- 	res.render("addbike",{er:"Successfully Added",user:req.user.username});
-}else{res.render("addbike",{er:"Already Exists!",user:req.user.username});}
+ 	if(err){res.render("addbike",{er:"Already Exists",user:req.user.username});}
+  if (!err){
+  		console.log("date:" + month);
+  		console.log("month :" +last);
+
+Statistics.findOne({date:month,month:last},function(err,result){
+	if(result){
+			
+
+Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,resU){
+ 		if(resU){
+ 			
+ 			res.render("addbike",{er:"Successfully Added",user:req.user.username});
+ 			
+ 		}
+ 		});
+
+	}else{
+
+		const statis = new Statistics({
+				date:month,
+				month:last,
+				purchase:req.body.totalcost
+			});
+			statis.save(function(err){
+				if(!err){
+					res.redirect("/bikes");
+				}
+			});
+	}
+	
+});
+	}
 });
 
 
-}
-});
+  	
 });
 
 
@@ -1003,10 +1048,17 @@ const bike = new Bike({
 app.post("/updatebike",function(req,res){
 const bike = new Bike();
 var rc=req.body.rc;
+var noc=req.body.noc;
 var rec=req.body.receive;
+var month= new Date(req.body.bdate);
+month.setDate(1);
+var last = new Date(month);
+last.setDate(month.getDate()-1);
 var purchase=req.body.totalcost-req.body.oldcost;
 var today=new Date();
+if(!req.body.rc){rc="false"}
 if(!req.body.receive){rec="false"}
+if(!req.body.noc){noc="false"}
 	Bike.updateOne({registerno:req.body.registerno},{
 	seller: req.body.seller,
 	pamount: req.body.pamount,
@@ -1017,17 +1069,18 @@ if(!req.body.receive){rec="false"}
 	ledger:req.body.ledger,
 	note: req.body.note,
 	rc: rc,
+	noc:noc,
 	receive:rec,
 	status:"Available"
   },function(err,result){
   		if(result){
-  				 expinc=new Extra({
-					date:today,
-					description:"JobCard " + req.body.registerno,
-					debit:req.body.jobcard
-					});
-  				 expinc.save();
-  			res.redirect("/bikes");
+  				Statistics.updateOne({date:month,month:last},{$inc:{purchase:purchase}},function(err,resU){
+ 		if(resU){
+ 			
+ 			res.redirect("/bikes");
+ 			
+ 		}
+ 		});
   		}
   	});
 });
@@ -1050,36 +1103,17 @@ if(!req.body.receive){rec="false"}
 
 app.post("/capital",function(req,res){
 var date=new Date(req.body.date);
-var capital=req.body.capitala;
-
-
+var amount=req.body.capitala;
 date.setDate(1);
-
-var acc=new Date(date);
-var d = date.getDate(); 
-var m =date.getMonth();
-acc.setMonth(m);
-acc.setDate(date.getDate());
-var month=new Date(acc);
-month.setDate(acc.getDate()-1);
-
-
- Statistics.findOne({date:acc},function(err,rst){
-	if(rst){
-			Statistics.updateOne({date:acc},{$inc:{'capital':capital}},function(err,rss){if(!err){res.redirect("/");}});
-	}else{
-		statis = new Statistics({
-    				date:acc,
-    				capital:capital,
-    				month:month
-    				});
-    		statis.save();
-    		res.redirect("/");
-
-
+const capital = new Capital({
+	date:date,
+	balance:amount
+});
+capital.save(function(err,result){
+	if(!err){
+		res.redirect("/");
 	}
 });
-
 });
 
 
@@ -1096,15 +1130,17 @@ app.post("/sale",function(req,res){
 	var rc=req.body.rc;
 	var clearmonth=new Date(null);
 	var sales=0;
+	var noc=req.body.noc;
 var today=  new Date(req.body.sdate);
 var month= new Date(req.body.sdate);
+
 month.setDate(1);
 var last = new Date(month);
 last.setDate(month.getDate()-1);
 var acc=new Date();
 var del=req.body.delivered;
 if(req.body.amoutdue=="0"){clearmonth=acc}
-	
+if(!req.body.noc){noc="false"}
 if(!req.body.rc){rc="false"}
 if(!req.body.delivered){del="false"}
 
@@ -1127,18 +1163,12 @@ if(foundbike){
 								snote :req.body.snote,
 								bike: foundbike,
 								rc:rc,
+								noc:noc,
 								delivery:del,
 								guarantee:req.body.guarantee,
 								clearmonth: clearmonth
 								});
- 								sell.save(function(err){
-											if (!err){
-												Statistics.updateOne({date:month,month:last},{$inc:{'sales':req.body.cpaid}},function(err,res){if(err){console.log(err)}});
-													Buyer.findOne({'bike.registerno':req.body.regrno},function(err,reC){
-														 res.redirect("/update/"+ reC._id);
-													});
-											}
-										});
+ 								sell.save();
 
  					}
  				});
@@ -1149,8 +1179,8 @@ if(foundbike){
 // ===========================================================Post Request========================================================/
 
 app.post("/update",function(req,res){
-console.log(req.body.register);
 var rc=req.body.rc;
+var noc=req.body.noc;
 var del=req.body.delivered;
 var acc=new Date(req.body.clearmonth);
 var today= new Date(req.body.duedate);
@@ -1168,6 +1198,7 @@ var acc=(1+ today.getMonth());
 if(req.body.amoutdue==0 && req.body.clearmonth=="1970-01-01"){if(!req.body.duedate){today=new Date();}}
 if(!req.body.rc){rc="false"}
 if(!req.body.delivered){del="false"}
+if(!req.body.noc){noc="false"}
 Buyer.updateOne({_id:req.body.id},{
 
 				name :req.body.name,
@@ -1179,14 +1210,13 @@ Buyer.updateOne({_id:req.body.id},{
 				due : req.body.amoutdue,
 				snote :req.body.snote,
 				rc:rc,
+				noc:noc,
 				delivery:del,
 				clearmonth : today,
 				guarantee:req.body.guarantee
 			},function(err,result){
 					if(result){
-  				 Statistics.updateOne({date:month,month:last},{$inc:{'sales':sales}},function(err,res){if(err){console.log(err)}
-  				 	
-  				});
+  				
 												
   			res.redirect("/saleList");
   		}
@@ -1330,8 +1360,8 @@ app.post("/search/bike",function(req,res){
 	var ava="";
 		if(req.body.available){ava=req.body.available}
 	var month="";
-	
-		if(req.body.month){ month=1 + new Date(req.body.month).getMonth();}
+	var last="";
+		if(req.body.month){ month=new Date(req.body.month),last=new Date(month),last.setMonth(month.getMonth()+1),last.setDate(last.getDate()-1)}
 
 
 if(!rc=="" && !ava==""){
@@ -1394,9 +1424,9 @@ else if(!ava==""){
 					}
    					
 		 		});
-	}else if(!month==""){
-		Bike.find({purchasemonth:month},function(err,reCorde){
-				if(reCorde){console.log(month);
+	}else if(!month == ""){
+		Bike.find({bdate:{$gt:month,$lt:last}},function(err,reCorde){
+				if(reCorde){;
 					res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});}
 				else{res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data",user:req.user.username});}
 								

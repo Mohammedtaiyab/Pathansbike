@@ -72,8 +72,10 @@
                         <div class="form-group"><% var i="unchecked";%>
                         <% if(bikeR.rc === true){i="checked"} %>
                         <input class="mycheck" type="Checkbox" id="rc" name="rc" value="true" <%= i %>>
-                          <label class="bmd-label-floating mylabel">Bike RC</label>
-                          
+                          <label class="bmd-label-floating mylabel">RC</label><% var i="unchecked";%>
+                            <% if(bikeR.noc === true){i="checked"} %>
+                           <input class="mycheck" name="noc" type="Checkbox" id="noc" value="true"  <%= i %>>
+                           <label class="bmd-label-floating mylabel">NOC</label>
                     
                         </div>
                       </div>
@@ -81,7 +83,7 @@
                         <div class="form-group"><% var j="unchecked";%>
                                                   <% if(bikeR.receive === true){j="checked"} %>
                            <input class="mycheck" type="Checkbox" id="receive" name="receive"  <%= j %> value="true">
-                          <label class="bmd-label-floating mylabel">Bike Recieved</label>
+                          <label class="bmd-label-floating mylabel">Recieved</label>
                         </div>
                       </div>
                      

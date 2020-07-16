@@ -110,7 +110,9 @@
                           Note
                         </th> 
                         <th scope="col">RC</th>
-                        <th scope="col">out</th>
+                       
+                        <th scope="col">NOC</th>
+                         <th scope="col">DEL</th>
                         <th>
                           Actions
                         </th>
@@ -158,6 +160,12 @@
                             <%=sale.snote%>
                           </td>
                            <td><% if(sale.rc===true){ %>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <% } else{%>
+                          <i class="fa fa-times" aria-hidden="true"></i>
+                          <%} %>
+                          </td>
+                          <td><% if(sale.noc===true){ %>
                           <i class="fa fa-check" aria-hidden="true"></i>
                           <% } else{%>
                           <i class="fa fa-times" aria-hidden="true"></i>
