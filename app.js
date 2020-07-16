@@ -1004,9 +1004,7 @@ const bike = new Bike({
  bike.save(function(err){
  	if(err){res.render("addbike",{er:"Already Exists",user:req.user.username});}
   if (!err){
-  		console.log("date:" + month);
-  		console.log("month :" +last);
-
+  		
 Statistics.findOne({date:month,month:last},function(err,result){
 	if(result){
 			
@@ -1074,13 +1072,33 @@ if(!req.body.noc){noc="false"}
 	status:"Available"
   },function(err,result){
   		if(result){
-  				Statistics.updateOne({date:month,month:last},{$inc:{purchase:purchase}},function(err,resU){
+  				Statistics.findOne({date:month,month:last},function(err,result){
+	if(result){
+			
+
+Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,resU){
  		if(resU){
  			
  			res.redirect("/bikes");
  			
  		}
  		});
+
+	}else{
+
+		const statis = new Statistics({
+				date:month,
+				month:last,
+				purchase:req.body.totalcost
+			});
+			statis.save(function(err){
+				if(!err){
+					res.redirect("/bikes");
+				}
+			});
+	}
+	
+});
   		}
   	});
 });

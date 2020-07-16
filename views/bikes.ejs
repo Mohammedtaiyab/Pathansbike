@@ -115,7 +115,7 @@
 
                       </thead>
                       <tbody>
-                      <% var i = 1; %>
+                      <% var i = 1,totalcost=0; %>
                        <%  bikeRecorde.forEach(function(bike){ %>
                           <tr>
                           <th scope="row">
@@ -144,6 +144,7 @@
                           </td>
                           <td>
                              <%=bike.totalcost%>
+                             <% totalcost = totalcost + bike.totalcost%>
                           </td>
                            <td class="text-primary">
                          <%=bike.ledger%>
@@ -185,14 +186,48 @@
  
                           Sold
                           <a href="/repurchase/<%=bike._id%>" onclick="return confirm('This Action will Delete Purchase and Sales Recorde and will be Added to History');"><img src="/static/img/recycle.png"></a> 
+                           <a href="/update/bike/<%=bike._id%>">
+                          <span class="material-icons">create</span></a>
                             <% } %>
                           </td>
 
 
                         </tr>
-
-
                                 <% i++; }) %>
+                                <tr>
+                                <th scope="col">
+                          
+                        </th>
+                        <th scope="col">
+                        
+                        </th>
+                        <th scope="col">
+                        
+                        </th>
+                        <th scope="col">
+                     
+                        </th>
+                        <th scope="col">
+                       
+                        </th>
+                  
+                        <th scope="col">
+                        
+                        </th>
+                        
+                                <th>Total Purchase </th>
+                                <th> <%= totalcost%> </th>
+                                 </th>
+                                  <th scope="col">
+                        </th>
+                        <th scope="col">
+                      
+                        </th>
+                        <th scope="col">
+                        
+                        </th>
+                        <th scope="col">
+                                </tr>
                       </tbody>
                     </table>
                   </div>

@@ -17,12 +17,17 @@
   <link href="/static/assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
  <link href="/static/assets/css/invoice.css" rel="stylesheet" />
 
-  
+  <style type="text/css">
+    .sidebar {
+      margin-left: -260xp;
+    }
+
+  </style>
 </head>
 
 <body id="body">
   <div class="wrapper ">
-    <div class="sidebar" data-color="purple" data-background-color="white">
+    <div class="sidebar" id="Sidebar" data-color="purple" data-background-color="white" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
       <!--
       Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
@@ -86,7 +91,7 @@
         </ul>
       </div>
     </div>
-    <div class="main-panel">
+    <div class="main-panel" id="main">
       <!-- Navbar -->
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">

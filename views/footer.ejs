@@ -119,6 +119,20 @@ $(document).ready(function() {
     }
   });
 });
+
+var mini = true;
+
+function toggleSidebar() {
+  if (mini) {
+    document.getElementById("main").style.width = "calc(100% - 260px)";
+    document.getElementById("Sidebar").style.marginLeft = "0px";
+    this.mini = false;
+  } else {
+    document.getElementById("main").style.width ="calc(100% - 40px)";
+    document.getElementById("Sidebar").style.marginLeft = "-240px";
+    this.mini = true;
+  }
+}
 </script>
 </body>
 
