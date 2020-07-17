@@ -375,19 +375,19 @@ app.get("/bikes", function(req, res){if (req.isAuthenticated()){
   			 Bike.find({}, function(err, bikeRecordes){
   			 	if(bikeRecordes){
   			 	
-  			 			bikeRecordes.forEach(function(bike){
-  			 				month=new Date(bike.bdate);
-							month.setDate(1);
-							var last=new Date(month);
-							last.setDate(month.getDate()-1);
-  			 		Statistics.findOne({date:month,month:last},function(err,result){
-					if(result){
-								Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,resU){
- 								if(err){
- 										console.log(err);
- 										}
- 									});
-					}else{
+
+bikeRecordes.forEach(function(bike){
+
+		var month=new Date(bike.bdate);
+		month.setDate(1);
+		var last=new Date(month);
+		last.setDate(month.getDate()-1);
+
+Statistics.findOne({date:month,month:last},function(err,result){
+	if(result){
+				Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,resU){
+ 				if(err){console.log(err);}});
+	}else{
 						const statis = new Statistics({
 						date:month,
 						month:last,
@@ -396,9 +396,41 @@ app.get("/bikes", function(req, res){if (req.isAuthenticated()){
 							statis.save();
   			 			}
 
-  			 		}
+});
 
-						res.render("bikes",{bikeRecorde:bikeRecordes,er:"",user:req.user.username});
+res.render("bikes",{bikeRecorde:bikeRecordes,er:"",user:req.user.username});
+});
+
+
+
+
+
+
+  			//  			bikeRecordes.forEach(function(bike){
+  			//  				month=new Date(bike.bdate);
+					// 		month.setDate(1);
+					// 		var last=new Date(month);
+					// 		last.setDate(month.getDate()-1);
+  			//  		Statistics.findOne({date:month,month:last},function(err,result){
+					// if(result){
+					// 			Statistics.updateOne({date:month,month:last},{$inc:{purchase:req.body.totalcost}},function(err,resU){
+ 				// 				if(err){
+ 				// 						console.log(err);
+ 				// 						}
+ 				// 					});
+					// }else{
+					// 	const statis = new Statistics({
+					// 	date:month,
+					// 	month:last,
+					// 	purchase:req.body.totalcost
+					// 	});
+					// 		statis.save();
+  			//  			}
+
+  			//  		}
+
+					// 	
+				}
 		 		 });
  } else {
     res.redirect("/login");
