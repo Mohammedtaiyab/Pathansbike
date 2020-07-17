@@ -723,11 +723,10 @@ app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 
 var today= new Date();
 var month=new Date(today);
-month.setDate(1);
 var last=new Date(month);
-last.setDate(month.getDate()-1);
+last.setMonth(month.getMonth()-1);
 
-Statistics.findOne({date:month,month:last},function(err,stRec){
+Statistics.findOne({date:{$lt:month,$gt:last}},function(err,stRec){
     		if(stRec){
     			//Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,oldrec){
     			//	if(oldrec){
@@ -1445,12 +1444,41 @@ else if(!ava==""){
    					
 		 		});
 	}else if(!month == ""){
+		var purchase=0;
 		Bike.find({bdate:{$gt:month,$lt:last}},function(err,reCorde){
-				if(reCorde){;
+				if(reCorde){
+					reCorde.forEach(function(bike){
+						purchase=purchase+bike.totalcost;
+					});
+  		
+Statistics.findOne({date:month,month:last},function(err,result){
+	if(result){
+Statistics.updateOne({date:month,month:last},{purchase:purchase},function(err,resU){
+ 		if(err){
+ 			
+ 			console.log(err);
+ 			
+ 		}
+ 		});
+
+	}else{
+
+		const statis = new Statistics({
+				date:month,
+				month:last,
+				purchase:purchase
+			});
+			statis.save();
+	}
+	
+});
+
+
 					res.render("bikes",{bikeRecorde:reCorde,er:"",user:req.user.username});}
 				else{res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data",user:req.user.username});}
 								
 					});
+
 	}
 
 		else{
