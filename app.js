@@ -373,6 +373,22 @@ app.get("/bikes", function(req, res){if (req.isAuthenticated()){
 
 
   			 Bike.find({}, function(err, bikeRecordes){
+  			 	if(bikeRecordes){
+  			 	
+  			 			bikeRecords.forEach(function(bike){
+  			 				month=new Date(bike.bdate);
+							month.setDate(1);
+							var last=new Date(month);
+							last.setDate(month.getDate()-1);
+  			 			});
+  			 				
+
+
+  			 	}
+
+
+
+
   			 res.render("bikes",{bikeRecorde:bikeRecordes,er:"",user:req.user.username});
 		 		 });
  } else {
@@ -723,10 +739,11 @@ app.get("/statistics",function(req,res){if (req.isAuthenticated()){
 
 var today= new Date();
 var month=new Date(today);
-month.setMonth(today.getMonth()-1);
+month.setDate(1);
 var last=new Date(month);
-last.setMonth(month.getMonth-1);
-Statistics.findOne({date:{$lt:today},month:{$gt:month}},function(err,stRec){
+last.setDate(month.getDate()-1);
+
+Statistics.findOne({date:month,month:last},function(err,stRec){
     		if(stRec){
     			//Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,oldrec){
     			//	if(oldrec){
@@ -1060,6 +1077,7 @@ if(!req.body.noc){noc="false"}
 	Bike.updateOne({registerno:req.body.registerno},{
 	seller: req.body.seller,
 	pamount: req.body.pamount,
+	bdate:req.body.bdate,
 	jobcard: req.body.jobcard,
 	tranfer: req.body.transfer,
 	jcref: req.body.jcref,
@@ -1370,7 +1388,7 @@ app.post("/task",function(req,res){
 
 // ===========================================================Post Request========================================================//
 
-app.post("/search/bike",function(req,res){
+app.post("/search/bike",function(req,res){if (req.isAuthenticated()){
 	var para = "";
 		if(req.body.para){para=req.body.para}
 	var rc="";
@@ -1420,7 +1438,7 @@ else if(!ava==""){
 							if(nameRecorde==""){ Bike.find({registerno:{$regex: req.body.para, $options: 'i'}}, function(err,regsRecorde){
 										if(regsRecorde){if(regsRecorde==""){
 												 Bike.find({chasisno:{$regex: req.body.para, $options: 'i'}}, function(err,chasisRecorde){
-												 		if(chasisRecorde){if(chasisRecorde==""){res.render("bikes",{bikeRecorde:chasisRecorde,er:"Couldn't Find Data"});}
+												 		if(chasisRecorde){if(chasisRecorde==""){res.render("bikes",{bikeRecorde:chasisRecorde,er:"Couldn't Find Data",user:req.user.username});}
 												 			else{res.render("bikes",{bikeRecorde:chasisRecorde,er:"",user:req.user.username});}
 												 		}
 												 });
@@ -1455,8 +1473,12 @@ else if(!ava==""){
 			//res.redirect("bikes");
 			res.render("bikes",{bikeRecorde:[],er:"Couldn't Find Data",user:req.user.username});
 		}
+			
+} else {
+    res.redirect("/login");
+  }
 
-})
+});
 
 
 // ===========================================================Post Request========================================================/
@@ -1612,12 +1634,14 @@ if(!amt=="" && !retrn==""){
 var date=new Date(req.body.month);
 month=new Date(req.body.month);
 month.setDate(1);
+var last=new Date(month);
+last.setDate(month.getDate()-1);
 var today=new Date();
-var last=new Date(today);
-last.setMonth(today.getMonth()-1);
-Statistics.findOne({date:{$lt:today},month:{$gt:last}},function(err,stRec){
+today.setDate(1);
+Statistics.findOne({date:today},function(err,stRec){
     		if(stRec){
-  Statistics.findOne({date:month},function(err,Rec){
+    				console.log(stRec);
+  Statistics.findOne({date:month,month:last},function(err,Rec){
    if(Rec){res.render("statistics",{statis:stRec,oldrec:Rec,user:req.user.username});}else{res.render("statistics",{statis:stRec,oldrec:"",user:req.user.username});}});						
 					}else{res.render("statistics",{statis:[],oldrec:"",user:req.user.username});}
 				});
