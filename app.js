@@ -47,10 +47,10 @@ app.use(passport.session());
 
 
 
-//mongoose.connect("mongodb://localhost:27017/KhwajaDB",{ useNewUrlParser: true ,  useUnifiedTopology: true  });
+mongoose.connect("mongodb://localhost:27017/KhwajaDB",{ useNewUrlParser: true ,  useUnifiedTopology: true  });
 
-mongoose.connect("mongodb+srv://admin_mohammed:Mohammed52@cluster0-i0eix.mongodb.net/KhwajaDB", {useNewUrlParser: true,useUnifiedTopology: true});
-mongoose.set('useFindAndModify', false);
+//mongoose.connect("mongodb+srv://admin_mohammed:Mohammed52@cluster0-i0eix.mongodb.net/KhwajaDB", {useNewUrlParser: true,useUnifiedTopology: true});
+//mongoose.set('useFindAndModify', false);
  mongoose.set('useCreateIndex', true);
 // ===========================================================Declarations========================================================//
 // ===========================================================Schemas========================================================//
@@ -70,8 +70,8 @@ passport.deserializeUser(User.deserializeUser());
 const bikeSchema ={
 	bname : String,
 	model : Number,
-	chasisno : { type: String, unique: true },
-	registerno:{ type: String, unique: true },
+	chasisno :{type:String,default:"NA"},
+	registerno:{type:String,default:"NA"},
 	seller:String,
 	bdate: Date,
 	pamount:Number,
@@ -90,7 +90,7 @@ const bikeSchema ={
 }
 
 const Bike = mongoose.model("Bike",bikeSchema);
-
+//mongoose.Bike.createIndex( { "xmpp_id": 1 }, { sparse: true } )
 const buyerSchema={
 	name : String,
 	add : String,
@@ -265,68 +265,28 @@ app.get("/logout", function(req, res){
 // ===========================================================Get Request========================================================//
 app.get("/", function(req, res){if (req.isAuthenticated()){
 var capital=0;
-var balance=0;
+var purchase=0;
 var today=new Date();
 Capital.findOne({},function(err,result){
 	if(result){
-			Task.find({date:{$lt:today}},function(err,rec){if(rec){
-			res.render("dashboard",{capital:result.balance,balance:result.balance,todo:rec,user:req.user.username});
+		Bike.find({},function(err,bikeRec){
+				if(bikeRec){
+					bikeRec.forEach(function(bike){
+						purchase=purchase+bike.totalcost;
+					});
+					capital=result.balance-purchase;
+					Task.find({date:{$lt:today}},function(err,rec){if(rec){
+			res.render("dashboard",{capital:capital,balance:capital,todo:rec,user:req.user.username});
 																}
 		});
+				}
+		});
+			
   										
 	}else{
 		res.render("dashboard",{capital:"",balance:"",todo:[],user:req.user.username});
 	}
 });
-
-
-
-
-
-// 	var purchase = 0;
-// 	var balance =0;
-// 	var sales=0;
-// 	var credit=0;
-// 	var debit=0;
-// 	var inccredit=0;
-// 	var expdebit=0;
-// 	var capital =0;
-//  var today= new Date();
-// month= new Date();
-// var last = new Date(month);
-// last.setMonth(month.getMonth()-1);
-//  var tdy=(1+ today.getMonth()+"/"+today.getFullYear());
-// Statistics.findOne({date:{$lt:month},month:{$gt:last}}, function(err, capRecordes){
-// 			if(!capRecordes){
-// 				month.setMonth(month.getMonth()-1);
-// 				last.setMonth(month.getMonth()-1);
-// 			}
-	
-// Statistics.findOne({date:{$lt:month},month:{$gt:last}},function(err,stRec){
-//     						if(stRec){
-    							
-//     								capital=stRec.capital;	
-//     							capital=(capital-stRec.purchase - stRec.expenses);
-//     									balance=capital+stRec.income+stRec.rent+ stRec.sales;
-//     								Fund.find({date:{$lt:month,$gt:last}},function(err,funds){
-//   													if(funds){
-//   																funds.forEach(function(fund){
-//    																credit=credit+fund.credit;
-//    																debit=debit+fund.debit;})
-//    															balance=(balance-debit)+credit;
-//    											Task.find({date:{$lt:today}},function(err,rec){if(rec){
-
-//    												res.render("dashboard",{capital:capital,balance:balance,sales:stRec.sales,purchase:stRec.purchase,today:tdy,acc:funds,income:(stRec.income+stRec.rent-credit),expenses:(stRec.expenses-debit),todo:rec,user:req.user.username});
-//    											}})
-  										
-
-//   													}});
-//     						}else{res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:tdy,acc:[],income:"",expenses:"",todo:[],user:req.user.username});}});
-
-// });
-
-//res.render("dashboard",{capital:"",balance:"",sales:"",purchase:"",today:"",acc:[],income:"",expenses:"",todo:[],user:req.user.username});
-
 
 
   } else {
@@ -394,9 +354,9 @@ app.get("/sale/:id",function(req,res){if (req.isAuthenticated()){
 
 		Bike.findOne({_id:req.params.id},function(err,foundbike){
 				if(foundbike){
-						res.render("sale",{registerno:foundbike.registerno,pera:'sale',buyer:0,bike:foundbike,er:"",user:req.user.username});
+						res.render("sale",{registerno:foundbike.registerno,_id:foundbike._id,pera:'sale',buyer:0,bike:foundbike,er:"",user:req.user.username});
 					}
-					else{res.render("sale",{registerno:"",pera:'sale',buyer:0,bike:[],er:"Bike Details Missing",user:req.user.username});}
+					else{res.render("sale",{registerno:"",_id:"",pera:'sale',buyer:0,bike:[],er:"Bike Details Missing",user:req.user.username});}
 				});
 } else {
     res.redirect("/login");
@@ -969,6 +929,8 @@ var rc=req.body.rc;
 var rec=req.body.recieve;
 var noc=req.body.noc;
 var purchase=0;
+var chasisno="NA";
+var registerno="NA";
 var today= new Date(req.body.bdate);
  var tdy=(1+ today.getMonth()) + "/" + (today.getYear()%100);
 var month= new Date(req.body.bdate);
@@ -979,11 +941,13 @@ var acc=new  Date(month.getFullYear() + "/" +(1+month.getMonth())) ;
 if(!req.body.rc){rc="false"}
 if(!req.body.recieve){rec="false"}
 if(!req.body.noc){noc="false"}
+if(req.body.chasisno){chasisno=req.body.chasisno}
+if(req.body.registerno){registerno=req.body.registerno}
 const bike = new Bike({
 	bname :req.body.bname,
 	model : req.body.model,
-	chasisno : req.body.chasisno,
-	registerno: req.body.registerno,
+	chasisno : chasisno,
+	registerno: registerno,
 	seller: req.body.seller,
 	bdate: req.body.bdate,
 	pamount: req.body.pamount,
@@ -1002,7 +966,7 @@ const bike = new Bike({
 
 
  bike.save(function(err){
- 	if(err){res.render("addbike",{er:"Already Exists",user:req.user.username});}
+ 	if(err){  console.log(err);}//res.render("addbike",{er:"Already Exists",user:req.user.username});}
   if (!err){
   		
 Statistics.findOne({date:month,month:last},function(err,result){
@@ -1162,15 +1126,15 @@ if(req.body.amoutdue=="0"){clearmonth=acc}
 if(!req.body.noc){noc="false"}
 if(!req.body.rc){rc="false"}
 if(!req.body.delivered){del="false"}
+var regsno =req.body.regrno;
+if(!req.body.regrno){regsno=""}
 
 
-
-Bike.findOne({registerno:req.body.regrno},function(err,foundbike){
-if(foundbike){
-			Bike.updateOne({registerno:req.body.regrno},{status:'Sold'},function(err,result){
- 					if(result.nModified===1){
  								const sell= new Buyer({
- 								registerno:req.body.regrno,
+ 								registerno:regsno,
+ 								bname:req.body.bname,
+ 								bikeid:req.body.id,
+ 								cost:req.body.cost,
 								name :req.body.name,
 								add : req.body.addr,
 								contact : req.body.contact,
@@ -1180,19 +1144,21 @@ if(foundbike){
 								paid :req.body.cpaid,
 								due : req.body.amoutdue,
 								snote :req.body.snote,
-								bike: foundbike,
 								rc:rc,
 								noc:noc,
 								delivery:del,
 								guarantee:req.body.guarantee,
 								clearmonth: clearmonth
 								});
- 								sell.save();
-
- 					}
- 				});
-}
-}); 	
+ 								sell.save(function(err){
+ 									if(!err){
+ 										res.redirect("/saleList");
+ 								}else
+ 									{
+ 										console.log(err);
+ 								}
+ 								});
+ 							//console.log("no issue");
 });
 
 // ===========================================================Post Request========================================================/

@@ -1,0 +1,492 @@
+/* 1 */
+{
+    "_id" : ObjectId("5f1166b1fb538100043d0e3c"),
+    "capital" : 0,
+    "purchase" : 50500,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-07-01T00:00:00.000Z"),
+    "month" : ISODate("2020-07-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 2 */
+{
+    "_id" : ObjectId("5f1166ebfb538100043d0e3d"),
+    "capital" : 0,
+    "purchase" : 1060826,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-06-01T00:00:00.000Z"),
+    "month" : ISODate("2020-06-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 3 */
+{
+    "_id" : ObjectId("5f1166effb538100043d0e3e"),
+    "capital" : 0,
+    "purchase" : 16500,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-05-01T00:00:00.000Z"),
+    "month" : ISODate("2020-05-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 4 */
+{
+    "_id" : ObjectId("5f1166f3fb538100043d0e3f"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-04-01T00:00:00.000Z"),
+    "month" : ISODate("2020-04-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 5 */
+{
+    "_id" : ObjectId("5f1166f6fb538100043d0e40"),
+    "capital" : 0,
+    "purchase" : 109900,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-03-01T00:00:00.000Z"),
+    "month" : ISODate("2020-03-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 6 */
+{
+    "_id" : ObjectId("5f1166fbfb538100043d0e41"),
+    "capital" : 0,
+    "purchase" : 508890,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-02-01T00:00:00.000Z"),
+    "month" : ISODate("2020-02-29T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 7 */
+{
+    "_id" : ObjectId("5f116700fb538100043d0e42"),
+    "capital" : 0,
+    "purchase" : 187570,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2020-01-01T00:00:00.000Z"),
+    "month" : ISODate("2020-01-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 8 */
+{
+    "_id" : ObjectId("5f116707fb538100043d0e43"),
+    "capital" : 0,
+    "purchase" : 68200,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-12-01T00:00:00.000Z"),
+    "month" : ISODate("2019-12-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 9 */
+{
+    "_id" : ObjectId("5f11679dfb538100043d0e44"),
+    "capital" : 0,
+    "purchase" : 28410,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-11-01T00:00:00.000Z"),
+    "month" : ISODate("2019-11-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 10 */
+{
+    "_id" : ObjectId("5f1167a2fb538100043d0e45"),
+    "capital" : 0,
+    "purchase" : 33000,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-10-01T00:00:00.000Z"),
+    "month" : ISODate("2019-10-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 11 */
+{
+    "_id" : ObjectId("5f1167a8fb538100043d0e46"),
+    "capital" : 0,
+    "purchase" : 9000,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-09-01T00:00:00.000Z"),
+    "month" : ISODate("2019-09-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 12 */
+{
+    "_id" : ObjectId("5f1167affb538100043d0e47"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-08-01T00:00:00.000Z"),
+    "month" : ISODate("2019-08-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 13 */
+{
+    "_id" : ObjectId("5f1167b7fb538100043d0e48"),
+    "capital" : 0,
+    "purchase" : 47750,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-07-01T00:00:00.000Z"),
+    "month" : ISODate("2019-07-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 14 */
+{
+    "_id" : ObjectId("5f1167bdfb538100043d0e49"),
+    "capital" : 0,
+    "purchase" : 50250,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-06-01T00:00:00.000Z"),
+    "month" : ISODate("2019-06-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 15 */
+{
+    "_id" : ObjectId("5f1167c8fb538100043d0e4a"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-05-01T00:00:00.000Z"),
+    "month" : ISODate("2019-05-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 16 */
+{
+    "_id" : ObjectId("5f1167cdfb538100043d0e4b"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-04-01T00:00:00.000Z"),
+    "month" : ISODate("2019-04-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 17 */
+{
+    "_id" : ObjectId("5f1167d4fb538100043d0e4c"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-03-01T00:00:00.000Z"),
+    "month" : ISODate("2019-03-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 18 */
+{
+    "_id" : ObjectId("5f1167d9fb538100043d0e4d"),
+    "capital" : 0,
+    "purchase" : 15720,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-02-01T00:00:00.000Z"),
+    "month" : ISODate("2019-02-28T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 19 */
+{
+    "_id" : ObjectId("5f1167ddfb538100043d0e4e"),
+    "capital" : 0,
+    "purchase" : 29630,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2019-01-01T00:00:00.000Z"),
+    "month" : ISODate("2019-01-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 20 */
+{
+    "_id" : ObjectId("5f1167e3fb538100043d0e4f"),
+    "capital" : 0,
+    "purchase" : 15520,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-12-01T00:00:00.000Z"),
+    "month" : ISODate("2018-12-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 21 */
+{
+    "_id" : ObjectId("5f1167e7fb538100043d0e50"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-11-01T00:00:00.000Z"),
+    "month" : ISODate("2018-11-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 22 */
+{
+    "_id" : ObjectId("5f1167f3fb538100043d0e51"),
+    "capital" : 0,
+    "purchase" : 31510,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-10-01T00:00:00.000Z"),
+    "month" : ISODate("2018-10-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 23 */
+{
+    "_id" : ObjectId("5f1167fbfb538100043d0e52"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-09-01T00:00:00.000Z"),
+    "month" : ISODate("2018-09-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 24 */
+{
+    "_id" : ObjectId("5f116803fb538100043d0e53"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-08-01T00:00:00.000Z"),
+    "month" : ISODate("2018-08-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 25 */
+{
+    "_id" : ObjectId("5f116808fb538100043d0e54"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-07-01T00:00:00.000Z"),
+    "month" : ISODate("2018-07-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 26 */
+{
+    "_id" : ObjectId("5f116810fb538100043d0e55"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-06-01T00:00:00.000Z"),
+    "month" : ISODate("2018-06-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 27 */
+{
+    "_id" : ObjectId("5f116822fb538100043d0e56"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-05-01T00:00:00.000Z"),
+    "month" : ISODate("2018-05-31T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 28 */
+{
+    "_id" : ObjectId("5f116827fb538100043d0e57"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-04-01T00:00:00.000Z"),
+    "month" : ISODate("2018-04-30T00:00:00.000Z"),
+    "__v" : 0
+}
+
+/* 29 */
+{
+    "_id" : ObjectId("5f116831fb538100043d0e58"),
+    "capital" : 0,
+    "purchase" : 0,
+    "sales" : 0,
+    "income" : 0,
+    "expenses" : 0,
+    "profit" : 0,
+    "loss" : 0,
+    "rent" : 0,
+    "status" : false,
+    "date" : ISODate("2018-03-01T00:00:00.000Z"),
+    "month" : ISODate("2018-03-31T00:00:00.000Z"),
+    "__v" : 0
+}
